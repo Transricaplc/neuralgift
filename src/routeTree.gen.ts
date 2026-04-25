@@ -9,38 +9,64 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as BuyRouteImport } from './routes/buy'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BuySuccessRouteImport } from './routes/buy.success'
 
+const BuyRoute = BuyRouteImport.update({
+  id: '/buy',
+  path: '/buy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BuySuccessRoute = BuySuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => BuyRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/buy': typeof BuyRouteWithChildren
+  '/buy/success': typeof BuySuccessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/buy': typeof BuyRouteWithChildren
+  '/buy/success': typeof BuySuccessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/buy': typeof BuyRouteWithChildren
+  '/buy/success': typeof BuySuccessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/buy' | '/buy/success'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/buy' | '/buy/success'
+  id: '__root__' | '/' | '/buy' | '/buy/success'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BuyRoute: typeof BuyRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/buy': {
+      id: '/buy'
+      path: '/buy'
+      fullPath: '/buy'
+      preLoaderRoute: typeof BuyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +74,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/buy/success': {
+      id: '/buy/success'
+      path: '/success'
+      fullPath: '/buy/success'
+      preLoaderRoute: typeof BuySuccessRouteImport
+      parentRoute: typeof BuyRoute
+    }
   }
 }
 
+interface BuyRouteChildren {
+  BuySuccessRoute: typeof BuySuccessRoute
+}
+
+const BuyRouteChildren: BuyRouteChildren = {
+  BuySuccessRoute: BuySuccessRoute,
+}
+
+const BuyRouteWithChildren = BuyRoute._addFileChildren(BuyRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BuyRoute: BuyRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
