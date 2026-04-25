@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RedeemRouteImport } from './routes/redeem'
 import { Route as BuyRouteImport } from './routes/buy'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BuySuccessRouteImport } from './routes/buy.success'
 
+const RedeemRoute = RedeemRouteImport.update({
+  id: '/redeem',
+  path: '/redeem',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BuyRoute = BuyRouteImport.update({
   id: '/buy',
   path: '/buy',
@@ -32,34 +38,45 @@ const BuySuccessRoute = BuySuccessRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/buy': typeof BuyRouteWithChildren
+  '/redeem': typeof RedeemRoute
   '/buy/success': typeof BuySuccessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/buy': typeof BuyRouteWithChildren
+  '/redeem': typeof RedeemRoute
   '/buy/success': typeof BuySuccessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/buy': typeof BuyRouteWithChildren
+  '/redeem': typeof RedeemRoute
   '/buy/success': typeof BuySuccessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/buy' | '/buy/success'
+  fullPaths: '/' | '/buy' | '/redeem' | '/buy/success'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/buy' | '/buy/success'
-  id: '__root__' | '/' | '/buy' | '/buy/success'
+  to: '/' | '/buy' | '/redeem' | '/buy/success'
+  id: '__root__' | '/' | '/buy' | '/redeem' | '/buy/success'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BuyRoute: typeof BuyRouteWithChildren
+  RedeemRoute: typeof RedeemRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/redeem': {
+      id: '/redeem'
+      path: '/redeem'
+      fullPath: '/redeem'
+      preLoaderRoute: typeof RedeemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/buy': {
       id: '/buy'
       path: '/buy'
@@ -97,6 +114,7 @@ const BuyRouteWithChildren = BuyRoute._addFileChildren(BuyRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BuyRoute: BuyRouteWithChildren,
+  RedeemRoute: RedeemRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
