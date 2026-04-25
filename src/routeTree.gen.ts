@@ -9,38 +9,126 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RedeemRouteImport } from './routes/redeem'
+import { Route as BuyRouteImport } from './routes/buy'
+import { Route as BusinessRouteImport } from './routes/business'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BuySuccessRouteImport } from './routes/buy.success'
+import { Route as BusinessLandingRouteImport } from './routes/business.landing'
 
+const RedeemRoute = RedeemRouteImport.update({
+  id: '/redeem',
+  path: '/redeem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuyRoute = BuyRouteImport.update({
+  id: '/buy',
+  path: '/buy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessRoute = BusinessRouteImport.update({
+  id: '/business',
+  path: '/business',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BuySuccessRoute = BuySuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => BuyRoute,
+} as any)
+const BusinessLandingRoute = BusinessLandingRouteImport.update({
+  id: '/landing',
+  path: '/landing',
+  getParentRoute: () => BusinessRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/business': typeof BusinessRouteWithChildren
+  '/buy': typeof BuyRouteWithChildren
+  '/redeem': typeof RedeemRoute
+  '/business/landing': typeof BusinessLandingRoute
+  '/buy/success': typeof BuySuccessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/business': typeof BusinessRouteWithChildren
+  '/buy': typeof BuyRouteWithChildren
+  '/redeem': typeof RedeemRoute
+  '/business/landing': typeof BusinessLandingRoute
+  '/buy/success': typeof BuySuccessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/business': typeof BusinessRouteWithChildren
+  '/buy': typeof BuyRouteWithChildren
+  '/redeem': typeof RedeemRoute
+  '/business/landing': typeof BusinessLandingRoute
+  '/buy/success': typeof BuySuccessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/business'
+    | '/buy'
+    | '/redeem'
+    | '/business/landing'
+    | '/buy/success'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/business'
+    | '/buy'
+    | '/redeem'
+    | '/business/landing'
+    | '/buy/success'
+  id:
+    | '__root__'
+    | '/'
+    | '/business'
+    | '/buy'
+    | '/redeem'
+    | '/business/landing'
+    | '/buy/success'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BusinessRoute: typeof BusinessRouteWithChildren
+  BuyRoute: typeof BuyRouteWithChildren
+  RedeemRoute: typeof RedeemRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/redeem': {
+      id: '/redeem'
+      path: '/redeem'
+      fullPath: '/redeem'
+      preLoaderRoute: typeof RedeemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/buy': {
+      id: '/buy'
+      path: '/buy'
+      fullPath: '/buy'
+      preLoaderRoute: typeof BuyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business': {
+      id: '/business'
+      path: '/business'
+      fullPath: '/business'
+      preLoaderRoute: typeof BusinessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +136,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/buy/success': {
+      id: '/buy/success'
+      path: '/success'
+      fullPath: '/buy/success'
+      preLoaderRoute: typeof BuySuccessRouteImport
+      parentRoute: typeof BuyRoute
+    }
+    '/business/landing': {
+      id: '/business/landing'
+      path: '/landing'
+      fullPath: '/business/landing'
+      preLoaderRoute: typeof BusinessLandingRouteImport
+      parentRoute: typeof BusinessRoute
+    }
   }
 }
 
+interface BusinessRouteChildren {
+  BusinessLandingRoute: typeof BusinessLandingRoute
+}
+
+const BusinessRouteChildren: BusinessRouteChildren = {
+  BusinessLandingRoute: BusinessLandingRoute,
+}
+
+const BusinessRouteWithChildren = BusinessRoute._addFileChildren(
+  BusinessRouteChildren,
+)
+
+interface BuyRouteChildren {
+  BuySuccessRoute: typeof BuySuccessRoute
+}
+
+const BuyRouteChildren: BuyRouteChildren = {
+  BuySuccessRoute: BuySuccessRoute,
+}
+
+const BuyRouteWithChildren = BuyRoute._addFileChildren(BuyRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BusinessRoute: BusinessRouteWithChildren,
+  BuyRoute: BuyRouteWithChildren,
+  RedeemRoute: RedeemRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
