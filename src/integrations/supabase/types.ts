@@ -14,13 +14,154 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      business_accounts: {
+        Row: {
+          billing_email: string | null
+          company_name: string | null
+          created_at: string
+          id: string
+          plan_tier: string
+          updated_at: string
+          webhook_url: string | null
+        }
+        Insert: {
+          billing_email?: string | null
+          company_name?: string | null
+          created_at?: string
+          id: string
+          plan_tier?: string
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Update: {
+          billing_email?: string | null
+          company_name?: string | null
+          created_at?: string
+          id?: string
+          plan_tier?: string
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          company: string
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          team_size: string
+          use_case: string | null
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          team_size: string
+          use_case?: string | null
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          team_size?: string
+          use_case?: string | null
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          amount: number
+          buyer_email: string
+          buyer_user_id: string | null
+          created_at: string
+          delivery_type: string
+          id: string
+          message: string | null
+          quantity: number
+          recipient_email: string | null
+          redemption_code: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          buyer_email: string
+          buyer_user_id?: string | null
+          created_at?: string
+          delivery_type?: string
+          id?: string
+          message?: string | null
+          quantity?: number
+          recipient_email?: string | null
+          redemption_code?: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          buyer_email?: string
+          buyer_user_id?: string | null
+          created_at?: string
+          delivery_type?: string
+          id?: string
+          message?: string | null
+          quantity?: number
+          recipient_email?: string | null
+          redemption_code?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      redemptions: {
+        Row: {
+          id: string
+          order_id: string
+          redeemed_at: string
+          services_selected: Json
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          redeemed_at?: string
+          services_selected: Json
+        }
+        Update: {
+          id?: string
+          order_id?: string
+          redeemed_at?: string
+          services_selected?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redemptions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      lookup_order_by_code: {
+        Args: { _code: string }
+        Returns: {
+          amount: number
+          created_at: string
+          id: string
+          message: string
+          recipient_email: string
+          status: string
+        }[]
+      }
+      redeem_order: { Args: { _code: string; _services: Json }; Returns: Json }
     }
     Enums: {
       [_ in never]: never
