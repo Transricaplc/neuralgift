@@ -33,10 +33,14 @@ export const Route = createRootRoute({
       { name: "description", content: "Gift the future of thinking. A universal AI gift card redeemable across ChatGPT, Claude, Midjourney and more." },
       { name: "author", content: "NeuralGift" },
       { property: "og:title", content: "NeuralGift — One card. Every AI tool." },
-      { property: "og:description", content: "Gift the future of thinking. A universal AI gift card." },
+      { property: "og:description", content: "Gift the future of thinking. A universal AI gift card redeemable across ChatGPT, Claude, Midjourney and more." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@NeuralGift" },
+      { name: "twitter:title", content: "NeuralGift — One card. Every AI tool." },
+      { name: "twitter:description", content: "Gift the future of thinking. A universal AI gift card redeemable across ChatGPT, Claude, Midjourney and more." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b65db7da-a898-48ad-b9bc-83f23a0bcc40/id-preview-2894ba99--240c0e4a-4912-4ef3-b65d-6259d6818ceb.lovable.app-1777119462873.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b65db7da-a898-48ad-b9bc-83f23a0bcc40/id-preview-2894ba99--240c0e4a-4912-4ef3-b65d-6259d6818ceb.lovable.app-1777119462873.png" },
     ],
     links: [
       {
