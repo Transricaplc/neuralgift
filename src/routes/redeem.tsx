@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
@@ -85,9 +85,27 @@ function RedeemPage() {
             const active = step >= n;
             return (
               <div key={label} className="flex items-center">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center font-display font-bold transition-colors ${active ? "bg-indigo text-indigo-foreground" : "border border-border text-muted-foreground"}`}>{n}</div>
-                <span className={`ml-2 ${active ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
-                {i < 3 && <div className={`w-6 sm:w-12 h-px mx-3 ${step > n ? "bg-indigo" : "bg-border"}`} />}
+                <motion.div
+                  animate={{
+                    scale: step === n ? 1.08 : 1,
+                    backgroundColor: active ? "var(--indigo)" : "transparent",
+                  }}
+                  transition={{ duration: 0.3 }}
+                  className={`w-7 h-7 rounded-full flex items-center justify-center font-display font-bold border ${active ? "border-indigo text-indigo-foreground" : "border-border text-muted-foreground"}`}
+                >
+                  {step > n ? "✓" : n}
+                </motion.div>
+                <span className={`ml-2 hidden sm:inline ${active ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
+                {i < 3 && (
+                  <div className="relative w-8 sm:w-14 h-px mx-3 bg-border overflow-hidden">
+                    <motion.div
+                      className="absolute inset-y-0 left-0 bg-indigo"
+                      initial={{ width: "0%" }}
+                      animate={{ width: step > n ? "100%" : "0%" }}
+                      transition={{ duration: 0.5, ease: "easeInOut" }}
+                    />
+                  </div>
+                )}
               </div>
             );
           })}
@@ -99,13 +117,7 @@ function RedeemPage() {
               <h1 className="font-display text-4xl sm:text-5xl font-bold">Enter your code.</h1>
               <p className="mt-3 text-muted-foreground">Paste the redemption code from your card or email.</p>
               <div className="mt-8 bg-surface border border-border rounded-2xl p-6">
-                <input
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-                  className="w-full h-14 rounded-xl bg-background border border-border px-4 font-mono tabular text-center text-base tracking-wider focus:outline-none focus:border-indigo/60"
-                  onKeyDown={(e) => e.key === "Enter" && checkBalance(code)}
-                />
+                <CodeInput value={code} onChange={setCode} onSubmit={() => checkBalance(code)} />
                 {error && <div className="mt-4 text-sm text-amber bg-amber/10 border border-amber/30 rounded-lg p-3">{error}</div>}
                 <button
                   onClick={() => checkBalance(code)}
