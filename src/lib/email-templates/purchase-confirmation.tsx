@@ -26,7 +26,7 @@ const PurchaseConfirmationEmail = ({
   return (
     <Html lang="en" dir="ltr">
       <Head />
-      <Preview>Your ${amount} {SITE_NAME} card is ready</Preview>
+        <Preview>{`Your $${amount} ${SITE_NAME} card is ready`}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Heading style={h1}>One card. Every AI tool.</Heading>
