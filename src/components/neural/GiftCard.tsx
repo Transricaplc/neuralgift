@@ -6,7 +6,7 @@ export function GiftCard({
   delay = 0,
   rotate = 0,
   float = false,
-}: { amount: number; className?: string; delay?: number; rotate?: number }) {
+}: { amount: number; className?: string; delay?: number; rotate?: number; float?: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30, rotate: rotate - 6 }}
