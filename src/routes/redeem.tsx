@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
@@ -85,9 +85,27 @@ function RedeemPage() {
             const active = step >= n;
             return (
               <div key={label} className="flex items-center">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center font-display font-bold transition-colors ${active ? "bg-indigo text-indigo-foreground" : "border border-border text-muted-foreground"}`}>{n}</div>
-                <span className={`ml-2 ${active ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
-                {i < 3 && <div className={`w-6 sm:w-12 h-px mx-3 ${step > n ? "bg-indigo" : "bg-border"}`} />}
+                <motion.div
+                  animate={{
+                    scale: step === n ? 1.08 : 1,
+                    backgroundColor: active ? "var(--indigo)" : "transparent",
+                  }}
+                  transition={{ duration: 0.3 }}
+                  className={`w-7 h-7 rounded-full flex items-center justify-center font-display font-bold border ${active ? "border-indigo text-indigo-foreground" : "border-border text-muted-foreground"}`}
+                >
+                  {step > n ? "✓" : n}
+                </motion.div>
+                <span className={`ml-2 hidden sm:inline ${active ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
+                {i < 3 && (
+                  <div className="relative w-8 sm:w-14 h-px mx-3 bg-border overflow-hidden">
+                    <motion.div
+                      className="absolute inset-y-0 left-0 bg-indigo"
+                      initial={{ width: "0%" }}
+                      animate={{ width: step > n ? "100%" : "0%" }}
+                      transition={{ duration: 0.5, ease: "easeInOut" }}
+                    />
+                  </div>
+                )}
               </div>
             );
           })}
@@ -99,13 +117,7 @@ function RedeemPage() {
               <h1 className="font-display text-4xl sm:text-5xl font-bold">Enter your code.</h1>
               <p className="mt-3 text-muted-foreground">Paste the redemption code from your card or email.</p>
               <div className="mt-8 bg-surface border border-border rounded-2xl p-6">
-                <input
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-                  className="w-full h-14 rounded-xl bg-background border border-border px-4 font-mono tabular text-center text-base tracking-wider focus:outline-none focus:border-indigo/60"
-                  onKeyDown={(e) => e.key === "Enter" && checkBalance(code)}
-                />
+                <CodeInput value={code} onChange={setCode} onSubmit={() => checkBalance(code)} />
                 {error && <div className="mt-4 text-sm text-amber bg-amber/10 border border-amber/30 rounded-lg p-3">{error}</div>}
                 <button
                   onClick={() => checkBalance(code)}
@@ -248,4 +260,94 @@ function ServiceTile({ s, active, onToggle, disabled }: { s: AIService; active: 
       </div>
     </button>
   );
+}
+
+/**
+ * Segmented PIN-style input. Splits a UUID-like string into 5 chunks
+ * (8-4-4-4-12). Allows full paste, animates each segment as it fills.
+ */
+function CodeInput({ value, onChange, onSubmit }: { value: string; onChange: (v: string) => void; onSubmit: () => void }) {
+  const sizes = [8, 4, 4, 4, 12];
+  const refs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Normalize: strip non-hex, lowercase
+  const clean = value.replace(/[^a-fA-F0-9]/g, "").toLowerCase().slice(0, 32);
+  const segs: string[] = [];
+  let cursor = 0;
+  for (const size of sizes) {
+    segs.push(clean.slice(cursor, cursor + size));
+    cursor += size;
+  }
+
+  function setSegment(i: number, v: string) {
+    const cleanedV = v.replace(/[^a-fA-F0-9]/g, "").toLowerCase();
+    const next = [...segs];
+    next[i] = cleanedV.slice(0, sizes[i]);
+    // Overflow into next segment
+    let overflow = cleanedV.slice(sizes[i]);
+    let j = i + 1;
+    while (overflow && j < sizes.length) {
+      next[j] = (next[j] + overflow).slice(0, sizes[j]);
+      overflow = overflow.slice(sizes[j] - (next[j].length - overflow.length || 0));
+      j++;
+    }
+    const joined = next.map((s, k) => s.padEnd(0)).join("");
+    // Re-format with dashes for downstream consumer
+    const out = formatUuid(joined);
+    onChange(out);
+    if (next[i].length === sizes[i] && i < sizes.length - 1) {
+      refs.current[i + 1]?.focus();
+    }
+  }
+
+  function onKeyDown(i: number, e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") { e.preventDefault(); onSubmit(); return; }
+    if (e.key === "Backspace" && !segs[i] && i > 0) {
+      refs.current[i - 1]?.focus();
+    }
+  }
+
+  function onPaste(e: React.ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text");
+    onChange(formatUuid(pasted.replace(/[^a-fA-F0-9]/g, "").slice(0, 32)));
+    setTimeout(() => refs.current[refs.current.length - 1]?.focus(), 0);
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+      {sizes.map((size, i) => {
+        const filled = segs[i].length === size;
+        return (
+          <div key={i} className="flex items-center gap-1.5 sm:gap-2">
+            <motion.input
+              ref={(el) => { refs.current[i] = el; }}
+              value={segs[i]}
+              onChange={(e) => setSegment(i, e.target.value)}
+              onKeyDown={(e) => onKeyDown(i, e)}
+              onPaste={onPaste}
+              maxLength={size}
+              spellCheck={false}
+              autoCapitalize="none"
+              autoComplete="off"
+              animate={{
+                borderColor: filled ? "var(--indigo)" : "var(--border)",
+                boxShadow: filled ? "0 0 0 3px oklch(0.62 0.21 277 / 0.15)" : "0 0 0 0px transparent",
+              }}
+              transition={{ duration: 0.2 }}
+              style={{ width: `${size * 14 + 16}px` }}
+              className="h-12 rounded-lg bg-background border px-2 font-mono tabular text-center text-sm tracking-[0.15em] uppercase focus:outline-none"
+            />
+            {i < sizes.length - 1 && <span className="text-muted-foreground/40">–</span>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function formatUuid(hex: string) {
+  const h = hex.slice(0, 32);
+  const parts = [h.slice(0, 8), h.slice(8, 12), h.slice(12, 16), h.slice(16, 20), h.slice(20, 32)].filter(Boolean);
+  return parts.join("-");
 }

@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
 import { GiftCard } from "@/components/neural/GiftCard";
+import { Marquee } from "@/components/neural/Marquee";
 import { AI_SERVICES } from "@/lib/services";
 
 export const Route = createFileRoute("/")({
@@ -78,21 +80,13 @@ function Index() {
             <p className="mt-5 text-xs text-muted-foreground">No subscriptions. No expiry tricks. They pick the tool.</p>
           </div>
 
-          {/* Card stack */}
-          <div className="relative h-[420px] sm:h-[480px]">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="absolute" style={{ transform: "translate(-90px, 30px)" }}>
-                <GiftCard amount={25} delay={0.2} rotate={-10} />
-              </div>
-              <div className="absolute z-10" style={{ transform: "translate(0, -10px) scale(1.05)" }}>
-                <GiftCard amount={50} delay={0.05} rotate={0} />
-              </div>
-              <div className="absolute" style={{ transform: "translate(90px, 30px)" }}>
-                <GiftCard amount={100} delay={0.35} rotate={10} />
-              </div>
-            </div>
-          </div>
+          <CardStack />
         </div>
+      </section>
+
+      {/* MARQUEE */}
+      <section className="border-y border-border bg-surface/40">
+        <Marquee />
       </section>
 
       {/* HOW IT WORKS */}
@@ -208,6 +202,48 @@ function Index() {
       </section>
 
       <Footer />
+    </div>
+  );
+}
+
+function CardStack() {
+  const ref = useRef<HTMLDivElement>(null);
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 80, damping: 18 });
+  const sy = useSpring(my, { stiffness: 80, damping: 18 });
+  const rotY = useTransform(sx, [-1, 1], [-12, 12]);
+  const rotX = useTransform(sy, [-1, 1], [8, -8]);
+
+  function onMove(e: React.MouseEvent<HTMLDivElement>) {
+    const r = ref.current?.getBoundingClientRect();
+    if (!r) return;
+    mx.set(((e.clientX - r.left) / r.width - 0.5) * 2);
+    my.set(((e.clientY - r.top) / r.height - 0.5) * 2);
+  }
+
+  return (
+    <div
+      ref={ref}
+      onMouseMove={onMove}
+      onMouseLeave={() => { mx.set(0); my.set(0); }}
+      className="relative h-[420px] sm:h-[480px]"
+      style={{ perspective: 1200 }}
+    >
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center"
+        style={{ rotateX: rotX, rotateY: rotY, transformStyle: "preserve-3d" }}
+      >
+        <div className="absolute" style={{ transform: "translate(-90px, 30px)" }}>
+          <GiftCard amount={25} delay={0.2} rotate={-10} float />
+        </div>
+        <div className="absolute z-10" style={{ transform: "translate(0, -10px) scale(1.05)" }}>
+          <GiftCard amount={50} delay={0.05} rotate={0} float />
+        </div>
+        <div className="absolute" style={{ transform: "translate(90px, 30px)" }}>
+          <GiftCard amount={100} delay={0.35} rotate={10} float />
+        </div>
+      </motion.div>
     </div>
   );
 }

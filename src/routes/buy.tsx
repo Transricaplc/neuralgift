@@ -196,6 +196,24 @@ function BuyPage() {
           </aside>
         </div>
       </main>
+
+      {/* Mobile sticky CTA */}
+      <div className="lg:hidden sticky bottom-0 z-40 border-t border-border bg-background/90 backdrop-blur-lg px-5 py-3 flex items-center gap-3">
+        <div className="flex-1">
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Total</div>
+          <div className="font-display font-bold text-lg tabular">${total}</div>
+        </div>
+        <button
+          type="button"
+          disabled={submitting}
+          onClick={handleCheckout}
+          className="h-11 px-5 rounded-full font-semibold text-gold-foreground disabled:opacity-60"
+          style={{ background: "var(--gradient-gold)", boxShadow: "var(--shadow-glow-gold)" }}
+        >
+          {submitting ? "Processing…" : "Pay (test)"}
+        </button>
+      </div>
+
       <Footer />
     </div>
   );
