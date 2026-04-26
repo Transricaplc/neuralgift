@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
@@ -14,12 +14,13 @@ export const Route = createFileRoute("/business")({
   }),
 });
 
-type Tab = "overview" | "orders" | "team" | "reports" | "settings";
+type Tab = "overview" | "orders" | "leads" | "team" | "reports" | "settings";
 
 function BusinessDashboard() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>("overview");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
@@ -27,22 +28,43 @@ function BusinessDashboard() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (!session) { setIsAdmin(false); return; }
+    (async () => {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      setIsAdmin(!!data);
+    })();
+  }, [session]);
+
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading…</div>;
   if (!session) return <LoginGate />;
+
+  const tabs: Tab[] = isAdmin
+    ? ["overview", "orders", "leads", "team", "reports", "settings"]
+    : ["overview", "orders", "team", "reports", "settings"];
 
   return (
     <div className="min-h-screen flex flex-col">
       <Nav />
       <div className="flex-1 max-w-7xl w-full mx-auto px-5 sm:px-8 py-8 grid lg:grid-cols-[220px_1fr] gap-8">
         <aside className="space-y-1">
-          {(["overview", "orders", "team", "reports", "settings"] as Tab[]).map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={`w-full text-left px-4 py-2.5 rounded-lg text-sm capitalize transition-colors ${tab === t ? "bg-indigo/15 text-foreground border border-indigo/30" : "text-muted-foreground hover:text-foreground hover:bg-elevated"}`}>{t}</button>
+          {tabs.map((t) => (
+            <button key={t} onClick={() => setTab(t)} className={`w-full text-left px-4 py-2.5 rounded-lg text-sm capitalize transition-colors flex items-center justify-between ${tab === t ? "bg-indigo/15 text-foreground border border-indigo/30" : "text-muted-foreground hover:text-foreground hover:bg-elevated"}`}>
+              <span>{t}</span>
+              {t === "leads" && <span className="text-[9px] uppercase tracking-widest text-gold">Admin</span>}
+            </button>
           ))}
           <button onClick={() => supabase.auth.signOut()} className="w-full text-left px-4 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-amber mt-6">Sign out</button>
         </aside>
         <main>
           {tab === "overview" && <Overview />}
           {tab === "orders" && <Orders />}
+          {tab === "leads" && (isAdmin ? <Leads /> : <NoAccess />)}
           {tab === "team" && <Team />}
           {tab === "reports" && <Reports />}
           {tab === "settings" && <Settings session={session} />}
@@ -51,6 +73,137 @@ function BusinessDashboard() {
       <Footer />
     </div>
   );
+}
+
+function NoAccess() {
+  return (
+    <div className="bg-surface border border-border rounded-2xl p-10 text-center text-muted-foreground">
+      You don't have access to this section.
+    </div>
+  );
+}
+
+type LeadRow = {
+  id: string;
+  created_at: string;
+  name: string;
+  company: string;
+  team_size: string;
+  email: string | null;
+  use_case: string | null;
+  status: string;
+  notes: string | null;
+};
+
+const LEAD_STATUSES = ["new", "contacted", "qualified", "closed"] as const;
+
+function Leads() {
+  const [rows, setRows] = useState<LeadRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<string>("all");
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+    const { data } = await supabase
+      .from("leads")
+      .select("id,created_at,name,company,team_size,email,use_case,status,notes")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (data) setRows(data as LeadRow[]);
+    setLoading(false);
+  }
+  useEffect(() => { load(); }, []);
+
+  const visible = rows.filter((r) => filter === "all" || r.status === filter);
+  const counts = LEAD_STATUSES.reduce<Record<string, number>>((acc, s) => {
+    acc[s] = rows.filter((r) => r.status === s).length;
+    return acc;
+  }, {});
+
+  async function updateLead(id: string, patch: Partial<LeadRow>) {
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+    await supabase.from("leads").update(patch).eq("id", id);
+  }
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-3">
+        <h1 className="font-display text-3xl font-bold">Leads</h1>
+        <div className="flex gap-1 bg-surface border border-border rounded-full p-1">
+          {(["all", ...LEAD_STATUSES] as const).map((s) => (
+            <button key={s} onClick={() => setFilter(s)} className={`px-3 h-8 rounded-full text-xs capitalize transition-colors ${filter === s ? "bg-indigo text-indigo-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+              {s}{s !== "all" && counts[s] !== undefined ? ` · ${counts[s]}` : ""}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="bg-surface border border-border rounded-2xl overflow-hidden">
+        {loading ? (
+          <div className="p-10 text-center text-muted-foreground">Loading…</div>
+        ) : visible.length === 0 ? (
+          <div className="p-10 text-center text-muted-foreground">No leads {filter !== "all" ? `with status "${filter}"` : "yet"}.</div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead><tr className="text-left text-xs uppercase tracking-widest text-muted-foreground border-b border-border">
+              <th className="p-4">Date</th><th className="p-4">Name</th><th className="p-4">Company</th><th className="p-4">Team</th><th className="p-4">Email</th><th className="p-4">Status</th>
+            </tr></thead>
+            <tbody>
+              {visible.map((r) => (
+                <Fragment key={r.id}>
+                  <tr onClick={() => setOpenId(openId === r.id ? null : r.id)} className="border-b border-border last:border-0 cursor-pointer hover:bg-elevated/40">
+                    <td className="p-4 text-muted-foreground tabular">{new Date(r.created_at).toLocaleDateString()}</td>
+                    <td className="p-4 font-medium">{r.name}</td>
+                    <td className="p-4">{r.company}</td>
+                    <td className="p-4 text-muted-foreground">{r.team_size}</td>
+                    <td className="p-4 text-muted-foreground">{r.email ?? "—"}</td>
+                    <td className="p-4"><LeadStatus s={r.status} /></td>
+                  </tr>
+                  {openId === r.id && (
+                    <tr className="border-b border-border bg-background/40">
+                      <td colSpan={6} className="p-5">
+                        <div className="grid md:grid-cols-2 gap-5">
+                          <div>
+                            <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Use case</div>
+                            <div className="text-sm whitespace-pre-wrap">{r.use_case || <span className="text-muted-foreground">—</span>}</div>
+                          </div>
+                          <div className="space-y-3">
+                            <div>
+                              <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Status</div>
+                              <select value={r.status} onChange={(e) => updateLead(r.id, { status: e.target.value })} className="h-9 rounded-lg bg-background border border-border px-2 text-sm">
+                                {LEAD_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                              </select>
+                            </div>
+                            <div>
+                              <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Internal notes</div>
+                              <textarea defaultValue={r.notes ?? ""} onBlur={(e) => updateLead(r.id, { notes: e.target.value })} rows={3} className="w-full rounded-lg bg-background border border-border p-2 text-sm" placeholder="Add notes…" />
+                            </div>
+                            {r.email && (
+                              <a href={`mailto:${r.email}?subject=Re: NeuralGift demo for ${encodeURIComponent(r.company)}`} className="inline-flex h-9 items-center px-4 rounded-full text-xs font-semibold bg-indigo text-indigo-foreground">Reply by email</a>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function LeadStatus({ s }: { s: string }) {
+  const map: Record<string, string> = {
+    new: "text-indigo bg-indigo/15",
+    contacted: "text-amber bg-amber/15",
+    qualified: "text-gold bg-gold/15",
+    closed: "text-muted-foreground bg-muted/40",
+  };
+  return <span className={`text-xs px-2 py-1 rounded-full capitalize ${map[s] ?? ""}`}>{s}</span>;
 }
 
 function LoginGate() {

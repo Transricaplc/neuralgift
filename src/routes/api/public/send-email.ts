@@ -8,20 +8,30 @@ import { z } from 'zod'
  * so this endpoint cannot be used to spam arbitrary email addresses.
  */
 
-const Schema = z.object({
-  type: z.enum(['purchase', 'redemption']),
-  code: z.string().uuid(),
-  services: z
-    .array(
-      z.object({
-        name: z.string().min(1).max(64),
-        cost: z.number().min(0).max(10000),
-        category: z.string().max(32).optional(),
-      })
-    )
-    .max(20)
-    .optional(),
-})
+const Schema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('purchase'),
+    code: z.string().uuid(),
+  }),
+  z.object({
+    type: z.literal('redemption'),
+    code: z.string().uuid(),
+    services: z
+      .array(
+        z.object({
+          name: z.string().min(1).max(64),
+          cost: z.number().min(0).max(10000),
+          category: z.string().max(32).optional(),
+        })
+      )
+      .max(20)
+      .optional(),
+  }),
+  z.object({
+    type: z.literal('lead'),
+    leadId: z.string().uuid(),
+  }),
+])
 
 export const Route = createFileRoute('/api/public/send-email')({
   server: {
@@ -44,20 +54,9 @@ export const Route = createFileRoute('/api/public/send-email')({
         if (!parsed.success) {
           return Response.json({ error: 'invalid_input' }, { status: 400 })
         }
-        const { type, code, services } = parsed.data
+        const input = parsed.data
 
         const admin = createClient(supabaseUrl, serviceKey)
-
-        // Look up the order by redemption_code — gates which addresses we email
-        const { data: order, error: orderErr } = await admin
-          .from('orders')
-          .select('id, amount, quantity, buyer_email, recipient_email, message')
-          .eq('redemption_code', code)
-          .maybeSingle()
-
-        if (orderErr || !order) {
-          return Response.json({ error: 'order_not_found' }, { status: 404 })
-        }
 
         const origin = new URL(request.url).origin
 
@@ -88,10 +87,41 @@ export const Route = createFileRoute('/api/public/send-email')({
 
         const results: Record<string, boolean> = {}
 
-        if (type === 'purchase') {
+        if (input.type === 'lead') {
+          const { data: lead, error: leadErr } = await admin
+            .from('leads')
+            .select('id, name, company, team_size, email')
+            .eq('id', input.leadId)
+            .maybeSingle()
+          if (leadErr || !lead) {
+            return Response.json({ error: 'lead_not_found' }, { status: 404 })
+          }
+          if (!lead.email) {
+            return Response.json({ ok: true, results: { skipped: true } })
+          }
+          results.lead = await enqueue(
+            'lead-confirmation',
+            lead.email,
+            { name: lead.name, company: lead.company, teamSize: lead.team_size },
+            `lead-${lead.id}`,
+          )
+          return Response.json({ ok: true, results })
+        }
+
+        // Order-based flows: look up by redemption_code
+        const { data: order, error: orderErr } = await admin
+          .from('orders')
+          .select('id, amount, quantity, buyer_email, recipient_email, message')
+          .eq('redemption_code', input.code)
+          .maybeSingle()
+        if (orderErr || !order) {
+          return Response.json({ error: 'order_not_found' }, { status: 404 })
+        }
+
+        if (input.type === 'purchase') {
           const data = {
             amount: order.amount,
-            redemptionCode: code,
+            redemptionCode: input.code,
             recipientEmail: order.recipient_email,
             message: order.message,
             quantity: order.quantity,
@@ -113,6 +143,7 @@ export const Route = createFileRoute('/api/public/send-email')({
             )
           }
         } else {
+          const services = input.services
           const totalAllocated = (services ?? []).reduce((s, x) => s + x.cost, 0)
           const remaining = Math.max(0, order.amount - totalAllocated)
           const data = {
