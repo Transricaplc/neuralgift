@@ -3,7 +3,6 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/business/landing")({
   component: BizLanding,
@@ -44,21 +43,27 @@ function BizLanding() {
     if (!name.trim() || !company.trim() || !teamSize.trim()) {
       setErr("Name, company and team size are required."); return;
     }
-    const { data, error } = await supabase
-      .from("leads")
-      .insert({ name, company, team_size: teamSize, use_case: useCase || null, email: email || null })
-      .select("id")
-      .single();
-    if (error) { setErr(error.message); return; }
-    // Fire-and-forget confirmation email if the lead provided one
-    if (email && data?.id) {
-      fetch("/api/public/send-email", {
+    try {
+      const res = await fetch("/api/public/submit-lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "lead", leadId: data.id }),
-      }).catch(() => {});
+        body: JSON.stringify({
+          name,
+          company,
+          teamSize,
+          useCase: useCase || null,
+          email: email || null,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setErr(data?.error === 'invalid_input' ? 'Please check your details.' : 'Something went wrong. Please try again.');
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setErr('Network error. Please try again.');
     }
-    setSubmitted(true);
   }
 
   return (
