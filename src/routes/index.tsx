@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
 import { GiftCard } from "@/components/neural/GiftCard";
+import { Marquee } from "@/components/neural/Marquee";
 import { AI_SERVICES } from "@/lib/services";
 
 export const Route = createFileRoute("/")({
@@ -78,21 +80,13 @@ function Index() {
             <p className="mt-5 text-xs text-muted-foreground">No subscriptions. No expiry tricks. They pick the tool.</p>
           </div>
 
-          {/* Card stack */}
-          <div className="relative h-[420px] sm:h-[480px]">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="absolute" style={{ transform: "translate(-90px, 30px)" }}>
-                <GiftCard amount={25} delay={0.2} rotate={-10} />
-              </div>
-              <div className="absolute z-10" style={{ transform: "translate(0, -10px) scale(1.05)" }}>
-                <GiftCard amount={50} delay={0.05} rotate={0} />
-              </div>
-              <div className="absolute" style={{ transform: "translate(90px, 30px)" }}>
-                <GiftCard amount={100} delay={0.35} rotate={10} />
-              </div>
-            </div>
-          </div>
+          <CardStack />
         </div>
+      </section>
+
+      {/* MARQUEE */}
+      <section className="border-y border-border bg-surface/40">
+        <Marquee />
       </section>
 
       {/* HOW IT WORKS */}
