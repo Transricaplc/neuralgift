@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
@@ -150,8 +150,8 @@ function Leads() {
             </tr></thead>
             <tbody>
               {visible.map((r) => (
-                <>
-                  <tr key={r.id} onClick={() => setOpenId(openId === r.id ? null : r.id)} className="border-b border-border last:border-0 cursor-pointer hover:bg-elevated/40">
+                <Fragment key={r.id}>
+                  <tr onClick={() => setOpenId(openId === r.id ? null : r.id)} className="border-b border-border last:border-0 cursor-pointer hover:bg-elevated/40">
                     <td className="p-4 text-muted-foreground tabular">{new Date(r.created_at).toLocaleDateString()}</td>
                     <td className="p-4 font-medium">{r.name}</td>
                     <td className="p-4">{r.company}</td>
@@ -160,7 +160,7 @@ function Leads() {
                     <td className="p-4"><LeadStatus s={r.status} /></td>
                   </tr>
                   {openId === r.id && (
-                    <tr key={`${r.id}-detail`} className="border-b border-border bg-background/40">
+                    <tr className="border-b border-border bg-background/40">
                       <td colSpan={6} className="p-5">
                         <div className="grid md:grid-cols-2 gap-5">
                           <div>
@@ -186,7 +186,7 @@ function Leads() {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>
