@@ -57,7 +57,14 @@ function BuyPage() {
       setError(insertErr?.message ?? "Something went wrong. Please try again.");
       return;
     }
-    navigate({ to: "/buy/success", search: { code: data.redemption_code as string } });
+    const code = data.redemption_code as string;
+    // Fire-and-forget purchase confirmation email
+    fetch("/api/public/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "purchase", code }),
+    }).catch(() => {});
+    navigate({ to: "/buy/success", search: { code } });
   }
 
   return (
