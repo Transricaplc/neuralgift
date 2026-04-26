@@ -261,3 +261,93 @@ function ServiceTile({ s, active, onToggle, disabled }: { s: AIService; active: 
     </button>
   );
 }
+
+/**
+ * Segmented PIN-style input. Splits a UUID-like string into 5 chunks
+ * (8-4-4-4-12). Allows full paste, animates each segment as it fills.
+ */
+function CodeInput({ value, onChange, onSubmit }: { value: string; onChange: (v: string) => void; onSubmit: () => void }) {
+  const sizes = [8, 4, 4, 4, 12];
+  const refs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Normalize: strip non-hex, lowercase
+  const clean = value.replace(/[^a-fA-F0-9]/g, "").toLowerCase().slice(0, 32);
+  const segs: string[] = [];
+  let cursor = 0;
+  for (const size of sizes) {
+    segs.push(clean.slice(cursor, cursor + size));
+    cursor += size;
+  }
+
+  function setSegment(i: number, v: string) {
+    const cleanedV = v.replace(/[^a-fA-F0-9]/g, "").toLowerCase();
+    const next = [...segs];
+    next[i] = cleanedV.slice(0, sizes[i]);
+    // Overflow into next segment
+    let overflow = cleanedV.slice(sizes[i]);
+    let j = i + 1;
+    while (overflow && j < sizes.length) {
+      next[j] = (next[j] + overflow).slice(0, sizes[j]);
+      overflow = overflow.slice(sizes[j] - (next[j].length - overflow.length || 0));
+      j++;
+    }
+    const joined = next.map((s, k) => s.padEnd(0)).join("");
+    // Re-format with dashes for downstream consumer
+    const out = formatUuid(joined);
+    onChange(out);
+    if (next[i].length === sizes[i] && i < sizes.length - 1) {
+      refs.current[i + 1]?.focus();
+    }
+  }
+
+  function onKeyDown(i: number, e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") { e.preventDefault(); onSubmit(); return; }
+    if (e.key === "Backspace" && !segs[i] && i > 0) {
+      refs.current[i - 1]?.focus();
+    }
+  }
+
+  function onPaste(e: React.ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text");
+    onChange(formatUuid(pasted.replace(/[^a-fA-F0-9]/g, "").slice(0, 32)));
+    setTimeout(() => refs.current[refs.current.length - 1]?.focus(), 0);
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+      {sizes.map((size, i) => {
+        const filled = segs[i].length === size;
+        return (
+          <div key={i} className="flex items-center gap-1.5 sm:gap-2">
+            <motion.input
+              ref={(el) => { refs.current[i] = el; }}
+              value={segs[i]}
+              onChange={(e) => setSegment(i, e.target.value)}
+              onKeyDown={(e) => onKeyDown(i, e)}
+              onPaste={onPaste}
+              maxLength={size}
+              spellCheck={false}
+              autoCapitalize="none"
+              autoComplete="off"
+              animate={{
+                borderColor: filled ? "var(--indigo)" : "var(--border)",
+                boxShadow: filled ? "0 0 0 3px oklch(0.62 0.21 277 / 0.15)" : "0 0 0 0px transparent",
+              }}
+              transition={{ duration: 0.2 }}
+              style={{ width: `${size * 14 + 16}px` }}
+              className="h-12 rounded-lg bg-background border px-2 font-mono tabular text-center text-sm tracking-[0.15em] uppercase focus:outline-none"
+            />
+            {i < sizes.length - 1 && <span className="text-muted-foreground/40">–</span>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function formatUuid(hex: string) {
+  const h = hex.slice(0, 32);
+  const parts = [h.slice(0, 8), h.slice(8, 12), h.slice(12, 16), h.slice(16, 20), h.slice(20, 32)].filter(Boolean);
+  return parts.join("-");
+}
