@@ -44,8 +44,20 @@ function BizLanding() {
     if (!name.trim() || !company.trim() || !teamSize.trim()) {
       setErr("Name, company and team size are required."); return;
     }
-    const { error } = await supabase.from("leads").insert({ name, company, team_size: teamSize, use_case: useCase || null, email: email || null });
+    const { data, error } = await supabase
+      .from("leads")
+      .insert({ name, company, team_size: teamSize, use_case: useCase || null, email: email || null })
+      .select("id")
+      .single();
     if (error) { setErr(error.message); return; }
+    // Fire-and-forget confirmation email if the lead provided one
+    if (email && data?.id) {
+      fetch("/api/public/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "lead", leadId: data.id }),
+      }).catch(() => {});
+    }
     setSubmitted(true);
   }
 
