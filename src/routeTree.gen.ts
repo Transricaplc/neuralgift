@@ -9,14 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as RedeemRouteImport } from './routes/redeem'
 import { Route as BuyRouteImport } from './routes/buy'
 import { Route as BusinessRouteImport } from './routes/business'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as BuySuccessRouteImport } from './routes/buy.success'
 import { Route as BusinessLandingRouteImport } from './routes/business.landing'
+import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as ApiPublicSendEmailRouteImport } from './routes/api/public/send-email'
+import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RedeemRoute = RedeemRouteImport.update({
   id: '/redeem',
   path: '/redeem',
@@ -37,6 +48,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
+  id: '/email/unsubscribe',
+  path: '/email/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BuySuccessRoute = BuySuccessRouteImport.update({
   id: '/success',
   path: '/success',
@@ -47,6 +63,28 @@ const BusinessLandingRoute = BusinessLandingRouteImport.update({
   path: '/landing',
   getParentRoute: () => BusinessRoute,
 } as any)
+const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
+  id: '/lovable/email/suppression',
+  path: '/lovable/email/suppression',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSendEmailRoute = ApiPublicSendEmailRouteImport.update({
+  id: '/api/public/send-email',
+  path: '/api/public/send-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailTransactionalSendRoute =
+  LovableEmailTransactionalSendRouteImport.update({
+    id: '/lovable/email/transactional/send',
+    path: '/lovable/email/transactional/send',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -59,18 +97,30 @@ export interface FileRoutesByFullPath {
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
   '/redeem': typeof RedeemRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/business/landing': typeof BusinessLandingRoute
   '/buy/success': typeof BuySuccessRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/api/public/send-email': typeof ApiPublicSendEmailRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
   '/redeem': typeof RedeemRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/business/landing': typeof BusinessLandingRoute
   '/buy/success': typeof BuySuccessRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/api/public/send-email': typeof ApiPublicSendEmailRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -78,9 +128,15 @@ export interface FileRoutesById {
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
   '/redeem': typeof RedeemRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/business/landing': typeof BusinessLandingRoute
   '/buy/success': typeof BuySuccessRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/api/public/send-email': typeof ApiPublicSendEmailRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -89,27 +145,45 @@ export interface FileRouteTypes {
     | '/business'
     | '/buy'
     | '/redeem'
+    | '/unsubscribe'
     | '/business/landing'
     | '/buy/success'
+    | '/email/unsubscribe'
+    | '/api/public/send-email'
+    | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/business'
     | '/buy'
     | '/redeem'
+    | '/unsubscribe'
     | '/business/landing'
     | '/buy/success'
+    | '/email/unsubscribe'
+    | '/api/public/send-email'
+    | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   id:
     | '__root__'
     | '/'
     | '/business'
     | '/buy'
     | '/redeem'
+    | '/unsubscribe'
     | '/business/landing'
     | '/buy/success'
+    | '/email/unsubscribe'
+    | '/api/public/send-email'
+    | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,11 +191,24 @@ export interface RootRouteChildren {
   BusinessRoute: typeof BusinessRouteWithChildren
   BuyRoute: typeof BuyRouteWithChildren
   RedeemRoute: typeof RedeemRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
+  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  ApiPublicSendEmailRoute: typeof ApiPublicSendEmailRoute
+  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
+  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/redeem': {
       id: '/redeem'
       path: '/redeem'
@@ -150,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/email/unsubscribe': {
+      id: '/email/unsubscribe'
+      path: '/email/unsubscribe'
+      fullPath: '/email/unsubscribe'
+      preLoaderRoute: typeof EmailUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/buy/success': {
       id: '/buy/success'
       path: '/success'
@@ -163,6 +257,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/business/landing'
       preLoaderRoute: typeof BusinessLandingRouteImport
       parentRoute: typeof BusinessRoute
+    }
+    '/lovable/email/suppression': {
+      id: '/lovable/email/suppression'
+      path: '/lovable/email/suppression'
+      fullPath: '/lovable/email/suppression'
+      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/send-email': {
+      id: '/api/public/send-email'
+      path: '/api/public/send-email'
+      fullPath: '/api/public/send-email'
+      preLoaderRoute: typeof ApiPublicSendEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/send': {
+      id: '/lovable/email/transactional/send'
+      path: '/lovable/email/transactional/send'
+      fullPath: '/lovable/email/transactional/send'
+      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
@@ -201,7 +323,13 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessRoute: BusinessRouteWithChildren,
   BuyRoute: BuyRouteWithChildren,
   RedeemRoute: RedeemRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
+  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  ApiPublicSendEmailRoute: ApiPublicSendEmailRoute,
+  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
+  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

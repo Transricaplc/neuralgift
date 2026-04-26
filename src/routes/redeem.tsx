@@ -71,6 +71,16 @@ function RedeemPage() {
       setError((data as { error?: string })?.error ?? rpcErr?.message ?? "Could not redeem. Try again.");
       return;
     }
+    // Fire-and-forget redemption confirmation email
+    fetch("/api/public/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "redemption",
+        code: code.trim(),
+        services: services.map((s) => ({ name: s.name, cost: s.cost, category: s.category })),
+      }),
+    }).catch(() => {});
     setStep(4);
   }
 
