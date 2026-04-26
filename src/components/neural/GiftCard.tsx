@@ -5,12 +5,21 @@ export function GiftCard({
   className = "",
   delay = 0,
   rotate = 0,
+  float = false,
 }: { amount: number; className?: string; delay?: number; rotate?: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30, rotate: rotate - 6 }}
-      animate={{ opacity: 1, y: 0, rotate }}
-      transition={{ delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      animate={
+        float
+          ? { opacity: 1, y: [0, -8, 0], rotate: [rotate, rotate + 0.6, rotate] }
+          : { opacity: 1, y: 0, rotate }
+      }
+      transition={
+        float
+          ? { delay, duration: 6, ease: "easeInOut", repeat: Infinity, opacity: { duration: 0.7 } }
+          : { delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }
+      }
       whileHover={{ y: -8, rotate: rotate * 0.5, transition: { duration: 0.3 } }}
       className={`relative aspect-[1.6/1] w-full max-w-[320px] rounded-2xl overflow-hidden ${className}`}
       style={{
