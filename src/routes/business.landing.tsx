@@ -10,6 +10,14 @@ export const Route = createFileRoute("/business/landing")({
     meta: [
       { title: "For business — NeuralGift" },
       { name: "description", content: "Replace coffee cards with capability. Bulk AI gift cards for teams." },
+      { property: "og:title", content: "NeuralGift for business" },
+      { property: "og:description", content: "Replace coffee cards with capability. Bulk AI gift cards for teams." },
+      { property: "og:url", content: "https://neuralgift.app/business/landing" },
+      { name: "twitter:title", content: "NeuralGift for business" },
+      { name: "twitter:description", content: "Replace coffee cards with capability. Bulk AI gift cards for teams." },
+    ],
+    links: [
+      { rel: "canonical", href: "https://neuralgift.app/business/landing" },
     ],
   }),
 });
