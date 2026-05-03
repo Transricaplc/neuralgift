@@ -6,6 +6,7 @@ import { Footer } from "@/components/neural/Footer";
 import { AI_SERVICES, type AIService } from "@/lib/services";
 import { ServiceIcon } from "@/components/neural/ServiceIcon";
 import { supabase } from "@/integrations/supabase/client";
+import { track } from "@/lib/analytics";
 import { z } from "zod";
 import { zodValidator } from "@tanstack/zod-adapter";
 
@@ -50,14 +51,17 @@ function RedeemPage() {
     setLoading(false);
     if (rpcErr || !data || data.length === 0) {
       setError("We couldn't find that code. Double-check the format.");
+      void track("redeem_lookup_failed");
       return;
     }
     const o = data[0] as Order;
     if (o.status === "redeemed") {
       setError("This card has already been redeemed.");
+      void track("redeem_already_redeemed");
       return;
     }
     setOrder(o); setStep(2);
+    void track("redeem_lookup_success", { amount: o.amount });
   }
 
   function toggle(id: string) {
@@ -78,8 +82,10 @@ function RedeemPage() {
     setLoading(false);
     if (rpcErr || !(data as { ok?: boolean })?.ok) {
       setError((data as { error?: string })?.error ?? rpcErr?.message ?? "Could not redeem. Try again.");
+      void track("redeem_confirm_failed");
       return;
     }
+    void track("redeem_confirmed", { count: services.length, allocated });
     // Fire-and-forget redemption confirmation email
     fetch("/api/public/send-email", {
       method: "POST",
