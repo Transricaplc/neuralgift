@@ -2,6 +2,27 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 
 import appCss from "../styles.css?url";
 
+const ORG_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "NeuralGift",
+  url: "https://neuralgift.app",
+  logo: "https://neuralgift.app/favicon.ico",
+  sameAs: ["https://twitter.com/NeuralGift"],
+};
+
+const SITE_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "NeuralGift",
+  url: "https://neuralgift.app",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://neuralgift.app/redeem?code={code}",
+    "query-input": "required name=code",
+  },
+};
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -52,6 +73,17 @@ export const Route = createRootRoute({
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap",
+      },
+      { rel: "canonical", href: "https://neuralgift.app/" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(ORG_JSONLD),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(SITE_JSONLD),
       },
     ],
   }),
