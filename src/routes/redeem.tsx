@@ -18,6 +18,14 @@ export const Route = createFileRoute("/redeem")({
     meta: [
       { title: "Redeem your card — NeuralGift" },
       { name: "description", content: "Enter your code and pick the AI tools you want." },
+      { property: "og:title", content: "Redeem your NeuralGift card" },
+      { property: "og:description", content: "Enter your code and pick the AI tools you want." },
+      { property: "og:url", content: "https://neuralgift.app/redeem" },
+      { name: "twitter:title", content: "Redeem your NeuralGift card" },
+      { name: "twitter:description", content: "Enter your code and pick the AI tools you want." },
+    ],
+    links: [
+      { rel: "canonical", href: "https://neuralgift.app/redeem" },
     ],
   }),
 });
