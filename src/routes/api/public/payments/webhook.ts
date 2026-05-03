@@ -18,8 +18,7 @@ async function handleCheckoutCompleted(session: any, origin: string) {
     return;
   }
   const supabase = getSupabase();
-  await supabase
-    .from('orders')
+  await (supabase as any).from('orders')
     .update({ status: 'paid', paid_at: new Date().toISOString() } as any)
     .eq('id', orderId);
 
