@@ -6,6 +6,7 @@ import { Footer } from "@/components/neural/Footer";
 import { GiftCard } from "@/components/neural/GiftCard";
 import { Marquee } from "@/components/neural/Marquee";
 import { AI_SERVICES } from "@/lib/services";
+import { ServiceIcon } from "@/components/neural/ServiceIcon";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -132,7 +133,7 @@ function Index() {
                 className="w-10 h-10 rounded-lg flex items-center justify-center font-display font-bold text-sm"
                 style={{ background: `${s.color}22`, color: s.color }}
               >
-                {s.name.charAt(0)}
+                <ServiceIcon id={s.id} size={22} />
               </div>
               <div className="text-xs font-medium leading-tight">{s.name}</div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.category}</div>
