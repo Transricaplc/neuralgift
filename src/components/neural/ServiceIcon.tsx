@@ -1,5 +1,6 @@
 import { SiAnthropic, SiPerplexity, SiCursor, SiElevenlabs } from "@icons-pack/react-simple-icons";
 import { Sparkles, ImageIcon, Video } from "lucide-react";
+import type { ReactElement } from "react";
 
 // Inline SVG for brands not in simple-icons (OpenAI, Midjourney, Runway)
 const OpenAIMark = (p: { size?: number; color?: string }) => (
@@ -20,7 +21,7 @@ const RunwayMark = (p: { size?: number; color?: string }) => (
   <Video size={p.size ?? 20} color={p.color ?? "currentColor"} />
 );
 
-const MAP: Record<string, (p: { size?: number; color?: string }) => JSX.Element> = {
+const MAP: Record<string, (p: { size?: number; color?: string }) => ReactElement> = {
   chatgpt: ChatGPTMark,
   claude: ({ size, color }) => <SiAnthropic size={size ?? 20} color={color ?? "currentColor"} />,
   perplexity: ({ size, color }) => <SiPerplexity size={size ?? 20} color={color ?? "currentColor"} />,
