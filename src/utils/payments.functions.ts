@@ -66,7 +66,7 @@ export const createGiftCardCheckout = createServerFn({ method: 'POST' })
       {
         price_data: {
           currency: 'usd',
-          product_data: { name: `NeuralGift Card — $${data.amountInCents / 100}` },
+          product_data: { name: `NeuralGift Card — $${data.amountInCents / 100}`, tax_code: 'txcd_90030000' },
           unit_amount: data.amountInCents,
         },
         quantity: data.quantity,
@@ -77,7 +77,7 @@ export const createGiftCardCheckout = createServerFn({ method: 'POST' })
       lineItems.push({
         price_data: {
           currency: 'usd',
-          product_data: { name: 'Physical card shipping' },
+          product_data: { name: 'Physical card shipping', tax_code: 'txcd_92010001' },
           unit_amount: data.deliveryFeeInCents,
         },
         quantity: 1,
