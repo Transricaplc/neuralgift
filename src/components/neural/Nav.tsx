@@ -9,6 +9,7 @@ export function Nav() {
         <nav className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
           <Link to="/business/landing" className="hover:text-foreground transition-colors">For Business</Link>
           <Link to="/redeem" className="hover:text-foreground transition-colors">Redeem</Link>
+          <Link to="/account" className="hover:text-foreground transition-colors">Account</Link>
         </nav>
         <div className="flex items-center gap-2">
           <Link
