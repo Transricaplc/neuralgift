@@ -16,6 +16,7 @@ import { Route as BusinessRouteImport } from './routes/business'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as BuySuccessRouteImport } from './routes/buy.success'
+import { Route as BuyReturnRouteImport } from './routes/buy.return'
 import { Route as BusinessLandingRouteImport } from './routes/business.landing'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiPublicSubmitLeadRouteImport } from './routes/api/public/submit-lead'
@@ -58,6 +59,11 @@ const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
 const BuySuccessRoute = BuySuccessRouteImport.update({
   id: '/success',
   path: '/success',
+  getParentRoute: () => BuyRoute,
+} as any)
+const BuyReturnRoute = BuyReturnRouteImport.update({
+  id: '/return',
+  path: '/return',
   getParentRoute: () => BuyRoute,
 } as any)
 const BusinessLandingRoute = BusinessLandingRouteImport.update({
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/redeem': typeof RedeemRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/business/landing': typeof BusinessLandingRoute
+  '/buy/return': typeof BuyReturnRoute
   '/buy/success': typeof BuySuccessRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/send-email': typeof ApiPublicSendEmailRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/redeem': typeof RedeemRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/business/landing': typeof BusinessLandingRoute
+  '/buy/return': typeof BuyReturnRoute
   '/buy/success': typeof BuySuccessRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/send-email': typeof ApiPublicSendEmailRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/redeem': typeof RedeemRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/business/landing': typeof BusinessLandingRoute
+  '/buy/return': typeof BuyReturnRoute
   '/buy/success': typeof BuySuccessRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/send-email': typeof ApiPublicSendEmailRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/redeem'
     | '/unsubscribe'
     | '/business/landing'
+    | '/buy/return'
     | '/buy/success'
     | '/email/unsubscribe'
     | '/api/public/send-email'
@@ -183,6 +193,7 @@ export interface FileRouteTypes {
     | '/redeem'
     | '/unsubscribe'
     | '/business/landing'
+    | '/buy/return'
     | '/buy/success'
     | '/email/unsubscribe'
     | '/api/public/send-email'
@@ -200,6 +211,7 @@ export interface FileRouteTypes {
     | '/redeem'
     | '/unsubscribe'
     | '/business/landing'
+    | '/buy/return'
     | '/buy/success'
     | '/email/unsubscribe'
     | '/api/public/send-email'
@@ -278,6 +290,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BuySuccessRouteImport
       parentRoute: typeof BuyRoute
     }
+    '/buy/return': {
+      id: '/buy/return'
+      path: '/return'
+      fullPath: '/buy/return'
+      preLoaderRoute: typeof BuyReturnRouteImport
+      parentRoute: typeof BuyRoute
+    }
     '/business/landing': {
       id: '/business/landing'
       path: '/landing'
@@ -350,10 +369,12 @@ const BusinessRouteWithChildren = BusinessRoute._addFileChildren(
 )
 
 interface BuyRouteChildren {
+  BuyReturnRoute: typeof BuyReturnRoute
   BuySuccessRoute: typeof BuySuccessRoute
 }
 
 const BuyRouteChildren: BuyRouteChildren = {
+  BuyReturnRoute: BuyReturnRoute,
   BuySuccessRoute: BuySuccessRoute,
 }
 
