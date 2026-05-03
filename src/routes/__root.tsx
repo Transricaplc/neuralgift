@@ -1,6 +1,29 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouterState } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { trackPageview } from "@/lib/analytics";
 
 import appCss from "../styles.css?url";
+
+const ORG_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "NeuralGift",
+  url: "https://neuralgift.app",
+  logo: "https://neuralgift.app/favicon.ico",
+  sameAs: ["https://twitter.com/NeuralGift"],
+};
+
+const SITE_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "NeuralGift",
+  url: "https://neuralgift.app",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://neuralgift.app/redeem?code={code}",
+    "query-input": "required name=code",
+  },
+};
 
 function NotFoundComponent() {
   return (
@@ -53,6 +76,17 @@ export const Route = createRootRoute({
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap",
       },
+      { rel: "canonical", href: "https://neuralgift.app/" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(ORG_JSONLD),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(SITE_JSONLD),
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -75,5 +109,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  useEffect(() => {
+    trackPageview(pathname);
+  }, [pathname]);
   return <Outlet />;
 }

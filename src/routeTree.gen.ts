@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RedeemRouteImport } from './routes/redeem'
 import { Route as BuyRouteImport } from './routes/buy'
 import { Route as BusinessRouteImport } from './routes/business'
@@ -30,6 +32,16 @@ import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/publi
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
   path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RedeemRoute = RedeemRouteImport.update({
@@ -123,6 +135,8 @@ export interface FileRoutesByFullPath {
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
   '/redeem': typeof RedeemRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/business/landing': typeof BusinessLandingRoute
   '/buy/return': typeof BuyReturnRoute
@@ -142,6 +156,8 @@ export interface FileRoutesByTo {
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
   '/redeem': typeof RedeemRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/business/landing': typeof BusinessLandingRoute
   '/buy/return': typeof BuyReturnRoute
@@ -162,6 +178,8 @@ export interface FileRoutesById {
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
   '/redeem': typeof RedeemRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/business/landing': typeof BusinessLandingRoute
   '/buy/return': typeof BuyReturnRoute
@@ -183,6 +201,8 @@ export interface FileRouteTypes {
     | '/business'
     | '/buy'
     | '/redeem'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/unsubscribe'
     | '/business/landing'
     | '/buy/return'
@@ -202,6 +222,8 @@ export interface FileRouteTypes {
     | '/business'
     | '/buy'
     | '/redeem'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/unsubscribe'
     | '/business/landing'
     | '/buy/return'
@@ -221,6 +243,8 @@ export interface FileRouteTypes {
     | '/business'
     | '/buy'
     | '/redeem'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/unsubscribe'
     | '/business/landing'
     | '/buy/return'
@@ -241,6 +265,8 @@ export interface RootRouteChildren {
   BusinessRoute: typeof BusinessRouteWithChildren
   BuyRoute: typeof BuyRouteWithChildren
   RedeemRoute: typeof RedeemRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicSendEmailRoute: typeof ApiPublicSendEmailRoute
@@ -259,6 +285,20 @@ declare module '@tanstack/react-router' {
       path: '/unsubscribe'
       fullPath: '/unsubscribe'
       preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/redeem': {
@@ -406,6 +446,8 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessRoute: BusinessRouteWithChildren,
   BuyRoute: BuyRouteWithChildren,
   RedeemRoute: RedeemRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicSendEmailRoute: ApiPublicSendEmailRoute,

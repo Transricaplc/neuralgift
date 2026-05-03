@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
+import { track } from "@/lib/analytics";
 
 export const Route = createFileRoute("/business/landing")({
   component: BizLanding,
@@ -10,6 +11,14 @@ export const Route = createFileRoute("/business/landing")({
     meta: [
       { title: "For business — NeuralGift" },
       { name: "description", content: "Replace coffee cards with capability. Bulk AI gift cards for teams." },
+      { property: "og:title", content: "NeuralGift for business" },
+      { property: "og:description", content: "Replace coffee cards with capability. Bulk AI gift cards for teams." },
+      { property: "og:url", content: "https://neuralgift.app/business/landing" },
+      { name: "twitter:title", content: "NeuralGift for business" },
+      { name: "twitter:description", content: "Replace coffee cards with capability. Bulk AI gift cards for teams." },
+    ],
+    links: [
+      { rel: "canonical", href: "https://neuralgift.app/business/landing" },
     ],
   }),
 });
@@ -58,9 +67,11 @@ function BizLanding() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setErr(data?.error === 'invalid_input' ? 'Please check your details.' : 'Something went wrong. Please try again.');
+        void track("lead_submit_failed", { reason: data?.error ?? "http" });
         return;
       }
       setSubmitted(true);
+      void track("lead_submitted", { teamSize });
     } catch {
       setErr('Network error. Please try again.');
     }
