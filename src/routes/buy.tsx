@@ -6,6 +6,7 @@ import { Footer } from "@/components/neural/Footer";
 import { GiftCard } from "@/components/neural/GiftCard";
 import { StripeGiftCardCheckout } from "@/components/StripeGiftCardCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { track } from "@/lib/analytics";
 
 export const Route = createFileRoute("/buy")({
   component: BuyPage,
@@ -46,9 +47,11 @@ function BuyPage() {
     setError(null);
     if (!buyerEmail.includes("@")) {
       setError("Add your email so we can send the receipt.");
+      void track("buy_checkout_validation_failed", { reason: "email" });
       return;
     }
     setCheckoutOpen(true);
+    void track("buy_checkout_opened", { amount, quantity, delivery, total });
   }
 
   return (
