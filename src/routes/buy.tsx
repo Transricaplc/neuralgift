@@ -13,6 +13,14 @@ export const Route = createFileRoute("/buy")({
     meta: [
       { title: "Buy a card — NeuralGift" },
       { name: "description", content: "Pick a denomination. Send digitally or ship a physical card." },
+      { property: "og:title", content: "Buy a NeuralGift card" },
+      { property: "og:description", content: "Pick a denomination. Send digitally or ship a physical card." },
+      { property: "og:url", content: "https://neuralgift.app/buy" },
+      { name: "twitter:title", content: "Buy a NeuralGift card" },
+      { name: "twitter:description", content: "Pick a denomination. Send digitally or ship a physical card." },
+    ],
+    links: [
+      { rel: "canonical", href: "https://neuralgift.app/buy" },
     ],
   }),
 });
