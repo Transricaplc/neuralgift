@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
 import { GiftCard } from "@/components/neural/GiftCard";
-import { supabase } from "@/integrations/supabase/client";
+import { StripeGiftCardCheckout } from "@/components/StripeGiftCardCheckout";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
 export const Route = createFileRoute("/buy")({
   component: BuyPage,
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/buy")({
 const DENOMS = [25, 50, 100] as const;
 
 function BuyPage() {
-  const navigate = useNavigate();
+  useNavigate();
   const [amount, setAmount] = useState<number>(50);
   const [delivery, setDelivery] = useState<"digital" | "physical">("digital");
   const [quantity, setQuantity] = useState(1);
@@ -27,48 +28,24 @@ function BuyPage() {
   const [recipientEmail, setRecipientEmail] = useState("");
   const [buyerEmail, setBuyerEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   const subtotal = amount * quantity;
   const total = subtotal + (delivery === "physical" ? 5 : 0);
 
-  async function handleCheckout() {
+  function handleCheckout() {
     setError(null);
     if (!buyerEmail.includes("@")) {
       setError("Add your email so we can send the receipt.");
       return;
     }
-    setSubmitting(true);
-    const { data, error: insertErr } = await supabase
-      .from("orders")
-      .insert({
-        buyer_email: buyerEmail,
-        recipient_email: recipientEmail || null,
-        amount,
-        delivery_type: delivery,
-        quantity,
-        message: message || null,
-      })
-      .select("redemption_code")
-      .single();
-    setSubmitting(false);
-    if (insertErr || !data) {
-      setError(insertErr?.message ?? "Something went wrong. Please try again.");
-      return;
-    }
-    const code = data.redemption_code as string;
-    // Fire-and-forget purchase confirmation email
-    fetch("/api/public/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "purchase", code }),
-    }).catch(() => {});
-    navigate({ to: "/buy/success", search: { code } });
+    setCheckoutOpen(true);
   }
 
   return (
     <div className="min-h-screen flex flex-col">
+      <PaymentTestModeBanner />
       <Nav />
       <main className="flex-1 max-w-7xl mx-auto px-5 sm:px-8 py-10 sm:py-16 w-full">
         <div className="mb-10">
@@ -189,15 +166,15 @@ function BuyPage() {
               )}
               <button
                 type="button"
-                disabled={submitting}
+                disabled={checkoutOpen}
                 onClick={handleCheckout}
                 className="mt-5 w-full h-12 rounded-full font-semibold text-gold-foreground disabled:opacity-60"
                 style={{ background: "var(--gradient-gold)", boxShadow: "var(--shadow-glow-gold)" }}
               >
-                {submitting ? "Processing…" : "Pay with Stripe (test)"}
+                {checkoutOpen ? "Loading checkout…" : "Continue to payment →"}
               </button>
               <p className="mt-3 text-xs text-muted-foreground text-center">
-                Test mode — no real charge. Your code is generated instantly.
+                Secure checkout by Stripe. Code generated after payment.
               </p>
             </div>
           </aside>
@@ -212,14 +189,43 @@ function BuyPage() {
         </div>
         <button
           type="button"
-          disabled={submitting}
+          disabled={checkoutOpen}
           onClick={handleCheckout}
           className="h-11 px-5 rounded-full font-semibold text-gold-foreground disabled:opacity-60"
           style={{ background: "var(--gradient-gold)", boxShadow: "var(--shadow-glow-gold)" }}
         >
-          {submitting ? "Processing…" : "Pay (test)"}
+          Continue →
         </button>
       </div>
+
+      {checkoutOpen && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm overflow-y-auto p-4 sm:p-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex justify-end mb-3">
+              <button
+                type="button"
+                onClick={() => setCheckoutOpen(false)}
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                ✕ Cancel
+              </button>
+            </div>
+            <div className="bg-surface border border-border rounded-2xl p-2 sm:p-4">
+              <StripeGiftCardCheckout
+                amountInCents={amount * 100}
+                quantity={quantity}
+                deliveryFeeInCents={delivery === "physical" ? 500 : 0}
+                buyerEmail={buyerEmail}
+                recipientEmail={recipientEmail || undefined}
+                recipientName={recipientName || undefined}
+                message={message || undefined}
+                deliveryType={delivery}
+                returnUrl={`${window.location.origin}/buy/return?session_id={CHECKOUT_SESSION_ID}`}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

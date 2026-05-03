@@ -16,6 +16,7 @@ import { Route as BusinessRouteImport } from './routes/business'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as BuySuccessRouteImport } from './routes/buy.success'
+import { Route as BuyReturnRouteImport } from './routes/buy.return'
 import { Route as BusinessLandingRouteImport } from './routes/business.landing'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiPublicSubmitLeadRouteImport } from './routes/api/public/submit-lead'
@@ -23,6 +24,7 @@ import { Route as ApiPublicSendEmailRouteImport } from './routes/api/public/send
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
@@ -57,6 +59,11 @@ const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
 const BuySuccessRoute = BuySuccessRouteImport.update({
   id: '/success',
   path: '/success',
+  getParentRoute: () => BuyRoute,
+} as any)
+const BuyReturnRoute = BuyReturnRouteImport.update({
+  id: '/return',
+  path: '/return',
   getParentRoute: () => BuyRoute,
 } as any)
 const BusinessLandingRoute = BusinessLandingRouteImport.update({
@@ -97,6 +104,12 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -105,11 +118,13 @@ export interface FileRoutesByFullPath {
   '/redeem': typeof RedeemRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/business/landing': typeof BusinessLandingRoute
+  '/buy/return': typeof BuyReturnRoute
   '/buy/success': typeof BuySuccessRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/send-email': typeof ApiPublicSendEmailRoute
   '/api/public/submit-lead': typeof ApiPublicSubmitLeadRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -121,11 +136,13 @@ export interface FileRoutesByTo {
   '/redeem': typeof RedeemRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/business/landing': typeof BusinessLandingRoute
+  '/buy/return': typeof BuyReturnRoute
   '/buy/success': typeof BuySuccessRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/send-email': typeof ApiPublicSendEmailRoute
   '/api/public/submit-lead': typeof ApiPublicSubmitLeadRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -138,11 +155,13 @@ export interface FileRoutesById {
   '/redeem': typeof RedeemRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/business/landing': typeof BusinessLandingRoute
+  '/buy/return': typeof BuyReturnRoute
   '/buy/success': typeof BuySuccessRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/api/public/send-email': typeof ApiPublicSendEmailRoute
   '/api/public/submit-lead': typeof ApiPublicSubmitLeadRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -156,11 +175,13 @@ export interface FileRouteTypes {
     | '/redeem'
     | '/unsubscribe'
     | '/business/landing'
+    | '/buy/return'
     | '/buy/success'
     | '/email/unsubscribe'
     | '/api/public/send-email'
     | '/api/public/submit-lead'
     | '/lovable/email/suppression'
+    | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -172,11 +193,13 @@ export interface FileRouteTypes {
     | '/redeem'
     | '/unsubscribe'
     | '/business/landing'
+    | '/buy/return'
     | '/buy/success'
     | '/email/unsubscribe'
     | '/api/public/send-email'
     | '/api/public/submit-lead'
     | '/lovable/email/suppression'
+    | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -188,11 +211,13 @@ export interface FileRouteTypes {
     | '/redeem'
     | '/unsubscribe'
     | '/business/landing'
+    | '/buy/return'
     | '/buy/success'
     | '/email/unsubscribe'
     | '/api/public/send-email'
     | '/api/public/submit-lead'
     | '/lovable/email/suppression'
+    | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -208,6 +233,7 @@ export interface RootRouteChildren {
   ApiPublicSendEmailRoute: typeof ApiPublicSendEmailRoute
   ApiPublicSubmitLeadRoute: typeof ApiPublicSubmitLeadRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
@@ -264,6 +290,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BuySuccessRouteImport
       parentRoute: typeof BuyRoute
     }
+    '/buy/return': {
+      id: '/buy/return'
+      path: '/return'
+      fullPath: '/buy/return'
+      preLoaderRoute: typeof BuyReturnRouteImport
+      parentRoute: typeof BuyRoute
+    }
     '/business/landing': {
       id: '/business/landing'
       path: '/landing'
@@ -313,6 +346,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -329,10 +369,12 @@ const BusinessRouteWithChildren = BusinessRoute._addFileChildren(
 )
 
 interface BuyRouteChildren {
+  BuyReturnRoute: typeof BuyReturnRoute
   BuySuccessRoute: typeof BuySuccessRoute
 }
 
 const BuyRouteChildren: BuyRouteChildren = {
+  BuyReturnRoute: BuyReturnRoute,
   BuySuccessRoute: BuySuccessRoute,
 }
 
@@ -348,6 +390,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicSendEmailRoute: ApiPublicSendEmailRoute,
   ApiPublicSubmitLeadRoute: ApiPublicSubmitLeadRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
@@ -355,12 +398,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
