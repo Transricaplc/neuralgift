@@ -173,39 +173,48 @@ export type Database = {
           buyer_email: string
           buyer_user_id: string | null
           created_at: string
+          currency: string
           delivery_type: string
           id: string
           message: string | null
+          paid_at: string | null
           quantity: number
           recipient_email: string | null
           redemption_code: string
           status: string
+          stripe_session_id: string | null
         }
         Insert: {
           amount: number
           buyer_email: string
           buyer_user_id?: string | null
           created_at?: string
+          currency?: string
           delivery_type?: string
           id?: string
           message?: string | null
+          paid_at?: string | null
           quantity?: number
           recipient_email?: string | null
           redemption_code?: string
           status?: string
+          stripe_session_id?: string | null
         }
         Update: {
           amount?: number
           buyer_email?: string
           buyer_user_id?: string | null
           created_at?: string
+          currency?: string
           delivery_type?: string
           id?: string
           message?: string | null
+          paid_at?: string | null
           quantity?: number
           recipient_email?: string | null
           redemption_code?: string
           status?: string
+          stripe_session_id?: string | null
         }
         Relationships: []
       }
