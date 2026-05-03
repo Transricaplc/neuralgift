@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
 import { AI_SERVICES, type AIService } from "@/lib/services";
+import { ServiceIcon } from "@/components/neural/ServiceIcon";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { zodValidator } from "@tanstack/zod-adapter";
@@ -194,7 +195,7 @@ function RedeemPage() {
                     return (
                       <div key={id} className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg flex items-center justify-center font-display font-bold" style={{ background: `${s.color}22`, color: s.color }}>{s.name.charAt(0)}</div>
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${s.color}22`, color: s.color }}><ServiceIcon id={s.id} size={18} /></div>
                           <div>
                             <div className="font-medium">{s.name}</div>
                             <div className="text-xs text-muted-foreground">{s.category}</div>
@@ -259,7 +260,7 @@ function ServiceTile({ s, active, onToggle, disabled }: { s: AIService; active: 
       }`}
     >
       <div className="flex items-start justify-between mb-3">
-        <div className="w-10 h-10 rounded-lg flex items-center justify-center font-display font-bold" style={{ background: `${s.color}22`, color: s.color }}>{s.name.charAt(0)}</div>
+        <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: `${s.color}22`, color: s.color }}><ServiceIcon id={s.id} size={22} /></div>
         <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{s.category}</span>
       </div>
       <div className="font-display font-semibold">{s.name}</div>

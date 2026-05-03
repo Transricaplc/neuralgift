@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { AI_SERVICES } from "@/lib/services";
+import { ServiceIcon } from "./ServiceIcon";
 
 export function Marquee() {
   const row = [...AI_SERVICES, ...AI_SERVICES];
@@ -19,7 +20,7 @@ export function Marquee() {
               className="w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-display font-bold"
               style={{ background: `${s.color}22`, color: s.color }}
             >
-              {s.name.charAt(0)}
+              <ServiceIcon id={s.id} size={14} />
             </span>
             <span className="text-sm font-medium">{s.name}</span>
             <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{s.category}</span>
