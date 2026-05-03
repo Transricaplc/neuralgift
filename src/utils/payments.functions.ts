@@ -104,7 +104,7 @@ export const createGiftCardCheckout = createServerFn({ method: 'POST' })
     });
 
     // Save session id on order so webhook can match
-    await supabase.from('orders').update({ stripe_session_id: session.id }).eq('id', order.id);
+    await supabase.from('orders').update({ stripe_session_id: session.id } as any).eq('id', order.id);
 
     return { clientSecret: session.client_secret, orderId: order.id };
   });

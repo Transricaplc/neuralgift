@@ -20,7 +20,7 @@ async function handleCheckoutCompleted(session: any, origin: string) {
   const supabase = getSupabase();
   await supabase
     .from('orders')
-    .update({ status: 'paid', paid_at: new Date().toISOString() })
+    .update({ status: 'paid', paid_at: new Date().toISOString() } as any)
     .eq('id', orderId);
 
   // Fire-and-forget purchase confirmation email
