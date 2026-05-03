@@ -133,13 +133,19 @@ export const Route = createFileRoute('/api/public/send-email')({
             data,
             `purchase-buyer-${order.id}`,
           )
-          // Optionally email the gift recipient
+          // Send a separate, recipient-styled gift email when applicable
           if (order.recipient_email && order.recipient_email !== order.buyer_email) {
             results.recipient = await enqueue(
-              'purchase-confirmation',
+              'gift-recipient',
               order.recipient_email,
-              data,
-              `purchase-recipient-${order.id}`,
+              {
+                amount: order.amount,
+                quantity: order.quantity,
+                redemptionCode: input.code,
+                buyerEmail: order.buyer_email,
+                message: order.message,
+              },
+              `gift-recipient-${order.id}`,
             )
           }
         } else {
