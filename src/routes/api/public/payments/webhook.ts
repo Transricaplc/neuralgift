@@ -10,7 +10,7 @@ function getSupabase() {
   return _supabase;
 }
 
-async function handleCheckoutCompleted(session: any) {
+async function handleCheckoutCompleted(session: any, origin: string) {
   const orderId = session.metadata?.order_id;
   const code = session.metadata?.redemption_code;
   if (!orderId) {
@@ -26,10 +26,7 @@ async function handleCheckoutCompleted(session: any) {
   // Fire-and-forget purchase confirmation email
   if (code) {
     try {
-      const base = process.env.SUPABASE_URL?.includes('localhost')
-        ? 'http://localhost:8080'
-        : `https://project--${process.env.VITE_SUPABASE_PROJECT_ID || ''}.lovable.app`;
-      await fetch(`${base}/api/public/send-email`, {
+      await fetch(`${origin}/api/public/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'purchase', code }),
@@ -53,7 +50,7 @@ export const Route = createFileRoute('/api/public/payments/webhook')({
           const event = await verifyWebhook(request, env);
           switch (event.type) {
             case 'checkout.session.completed':
-              await handleCheckoutCompleted(event.data.object);
+              await handleCheckoutCompleted(event.data.object, new URL(request.url).origin);
               break;
             default:
               console.log('Unhandled event:', event.type);
