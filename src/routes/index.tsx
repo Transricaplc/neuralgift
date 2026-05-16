@@ -3,6 +3,7 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
+import { SmartBanner } from "@/components/neural/SmartBanner";
 import { GiftCard } from "@/components/neural/GiftCard";
 import { Marquee } from "@/components/neural/Marquee";
 import { AI_SERVICES } from "@/lib/services";
@@ -28,6 +29,7 @@ function Index() {
   return (
     <div className="min-h-screen flex flex-col">
       <Nav />
+      <SmartBanner />
 
       {/* HERO */}
       <section className="relative overflow-hidden">
