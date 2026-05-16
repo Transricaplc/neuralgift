@@ -91,6 +91,12 @@
   --destructive: oklch(0.78 0.16 70);
   --destructive-foreground: oklch(0.15 0.01 280);
 
+  /* v3 — Global Financial Inclusion tokens */
+  --crypto-teal:    #14B8A6;  /* All crypto payment flows */
+  --conflict-amber: #F59E0B;  /* Access notes for conflict/crisis regions */
+  --success-green:  #22C55E;  /* Payment success + live coverage */
+  --world-blue:     #3B82F6;  /* /global-access map + coverage stats */
+
   --border: oklch(1 0 0 / 6%);
   --input: oklch(1 0 0 / 10%);
   --ring: oklch(0.62 0.21 277);
