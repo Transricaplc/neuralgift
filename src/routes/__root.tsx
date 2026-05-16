@@ -1,6 +1,9 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { trackPageview } from "@/lib/analytics";
+import { RegionProvider } from "@/contexts/RegionContext";
+import { CountrySelector } from "@/components/neural/CountrySelector";
+import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
 
@@ -113,5 +116,11 @@ function RootComponent() {
   useEffect(() => {
     trackPageview(pathname);
   }, [pathname]);
-  return <Outlet />;
+  return (
+    <RegionProvider>
+      <Outlet />
+      <CountrySelector />
+      <Toaster />
+    </RegionProvider>
+  );
 }
