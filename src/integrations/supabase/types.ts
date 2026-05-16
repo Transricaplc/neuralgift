@@ -164,6 +164,53 @@ export type Database = {
         }
         Relationships: []
       }
+      gift_deliveries: {
+        Row: {
+          created_at: string
+          delivery_method: string
+          id: string
+          occasion: string | null
+          opened_at: string | null
+          order_id: string | null
+          personal_message: string | null
+          recipient_contact: string | null
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_method: string
+          id?: string
+          occasion?: string | null
+          opened_at?: string | null
+          order_id?: string | null
+          personal_message?: string | null
+          recipient_contact?: string | null
+          sent_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          delivery_method?: string
+          id?: string
+          occasion?: string | null
+          opened_at?: string | null
+          order_id?: string | null
+          personal_message?: string | null
+          recipient_contact?: string | null
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_deliveries_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           company: string
@@ -205,14 +252,24 @@ export type Database = {
           amount: number
           buyer_email: string
           buyer_user_id: string | null
+          country_code: string | null
           created_at: string
           currency: string
+          currency_code: string
           delivery_type: string
+          exchange_rate: number
+          gift_mode: boolean
           id: string
+          is_crypto_payment: boolean
+          local_amount: number | null
           message: string | null
+          occasion: string | null
           paid_at: string | null
+          payment_method_key: string
+          psp: string
           quantity: number
           recipient_email: string | null
+          recipient_whatsapp: string | null
           redemption_code: string
           status: string
           stripe_session_id: string | null
@@ -221,14 +278,24 @@ export type Database = {
           amount: number
           buyer_email: string
           buyer_user_id?: string | null
+          country_code?: string | null
           created_at?: string
           currency?: string
+          currency_code?: string
           delivery_type?: string
+          exchange_rate?: number
+          gift_mode?: boolean
           id?: string
+          is_crypto_payment?: boolean
+          local_amount?: number | null
           message?: string | null
+          occasion?: string | null
           paid_at?: string | null
+          payment_method_key?: string
+          psp?: string
           quantity?: number
           recipient_email?: string | null
+          recipient_whatsapp?: string | null
           redemption_code?: string
           status?: string
           stripe_session_id?: string | null
@@ -237,17 +304,134 @@ export type Database = {
           amount?: number
           buyer_email?: string
           buyer_user_id?: string | null
+          country_code?: string | null
           created_at?: string
           currency?: string
+          currency_code?: string
           delivery_type?: string
+          exchange_rate?: number
+          gift_mode?: boolean
           id?: string
+          is_crypto_payment?: boolean
+          local_amount?: number | null
           message?: string | null
+          occasion?: string | null
           paid_at?: string | null
+          payment_method_key?: string
+          psp?: string
           quantity?: number
           recipient_email?: string | null
+          recipient_whatsapp?: string | null
           redemption_code?: string
           status?: string
           stripe_session_id?: string | null
+        }
+        Relationships: []
+      }
+      payment_intents: {
+        Row: {
+          buyer_ip_country: string | null
+          completed_at: string | null
+          created_at: string
+          crypto_address: string | null
+          crypto_network: string | null
+          crypto_token: string | null
+          crypto_tx_hash: string | null
+          exchange_rate: number | null
+          id: string
+          local_amount: number | null
+          local_currency: string | null
+          order_id: string | null
+          payment_method_key: string
+          phone_number: string | null
+          platform_commission_pct: number | null
+          provider_reference: string | null
+          psp: string
+          status: string
+          usd_amount: number | null
+          voucher_code: string | null
+        }
+        Insert: {
+          buyer_ip_country?: string | null
+          completed_at?: string | null
+          created_at?: string
+          crypto_address?: string | null
+          crypto_network?: string | null
+          crypto_token?: string | null
+          crypto_tx_hash?: string | null
+          exchange_rate?: number | null
+          id?: string
+          local_amount?: number | null
+          local_currency?: string | null
+          order_id?: string | null
+          payment_method_key: string
+          phone_number?: string | null
+          platform_commission_pct?: number | null
+          provider_reference?: string | null
+          psp: string
+          status?: string
+          usd_amount?: number | null
+          voucher_code?: string | null
+        }
+        Update: {
+          buyer_ip_country?: string | null
+          completed_at?: string | null
+          created_at?: string
+          crypto_address?: string | null
+          crypto_network?: string | null
+          crypto_token?: string | null
+          crypto_tx_hash?: string | null
+          exchange_rate?: number | null
+          id?: string
+          local_amount?: number | null
+          local_currency?: string | null
+          order_id?: string | null
+          payment_method_key?: string
+          phone_number?: string | null
+          platform_commission_pct?: number | null
+          provider_reference?: string | null
+          psp?: string
+          status?: string
+          usd_amount?: number | null
+          voucher_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_intents_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      platform_requests: {
+        Row: {
+          created_at: string
+          id: string
+          request_type: string
+          requested_value: string
+          requester_country: string | null
+          requester_email: string | null
+          vote_count: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          request_type: string
+          requested_value: string
+          requester_country?: string | null
+          requester_email?: string | null
+          vote_count?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          request_type?: string
+          requested_value?: string
+          requester_country?: string | null
+          requester_email?: string | null
+          vote_count?: number
         }
         Relationships: []
       }
@@ -280,6 +464,57 @@ export type Database = {
           },
         ]
       }
+      regions: {
+        Row: {
+          access_note: string | null
+          available_payment_methods: Json
+          country_code: string
+          country_name: string
+          coverage_status: string
+          currency_code: string
+          currency_symbol: string
+          emoji: string | null
+          exchange_rate_usd: number
+          id: string
+          is_active: boolean
+          micro_bundle_usd: number | null
+          primary_psp: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_note?: string | null
+          available_payment_methods?: Json
+          country_code: string
+          country_name: string
+          coverage_status?: string
+          currency_code: string
+          currency_symbol: string
+          emoji?: string | null
+          exchange_rate_usd?: number
+          id?: string
+          is_active?: boolean
+          micro_bundle_usd?: number | null
+          primary_psp?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_note?: string | null
+          available_payment_methods?: Json
+          country_code?: string
+          country_name?: string
+          coverage_status?: string
+          currency_code?: string
+          currency_symbol?: string
+          emoji?: string | null
+          exchange_rate_usd?: number
+          id?: string
+          is_active?: boolean
+          micro_bundle_usd?: number | null
+          primary_psp?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -301,6 +536,54 @@ export type Database = {
           id?: string
           metadata?: Json | null
           reason?: string
+        }
+        Relationships: []
+      }
+      token_bundles: {
+        Row: {
+          bundle_name: string
+          category: string | null
+          created_at: string
+          description: string | null
+          display_order: number
+          fulfillment_type: string
+          id: string
+          is_active: boolean
+          is_giftable: boolean
+          platform: string
+          token_quantity: number | null
+          token_unit: string | null
+          usd_price: number
+        }
+        Insert: {
+          bundle_name: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          fulfillment_type?: string
+          id?: string
+          is_active?: boolean
+          is_giftable?: boolean
+          platform: string
+          token_quantity?: number | null
+          token_unit?: string | null
+          usd_price: number
+        }
+        Update: {
+          bundle_name?: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          fulfillment_type?: string
+          id?: string
+          is_active?: boolean
+          is_giftable?: boolean
+          platform?: string
+          token_quantity?: number | null
+          token_unit?: string | null
+          usd_price?: number
         }
         Relationships: []
       }
