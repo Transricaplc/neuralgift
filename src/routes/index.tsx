@@ -8,6 +8,10 @@ import { GiftCard } from "@/components/neural/GiftCard";
 import { Marquee } from "@/components/neural/Marquee";
 import { AI_SERVICES } from "@/lib/services";
 import { ServiceIcon } from "@/components/neural/ServiceIcon";
+import { FlagPills } from "@/components/neural/FlagPills";
+import { PayYourWay } from "@/components/neural/PayYourWay";
+import { BuilderStories } from "@/components/neural/BuilderStories";
+import { TransparencyStrip } from "@/components/neural/TransparencyStrip";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -58,12 +62,22 @@ function Index() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="mt-6 text-lg text-muted-foreground max-w-lg"
             >
-              One card. Every AI tool. Instantly redeemable across ChatGPT, Claude, Midjourney and more — split exactly how they like.
+              One card. Every AI tool. Every currency.
+              <br className="hidden sm:block" />
+              Pay in <span className="text-foreground font-medium">your money</span>, your way — M-Pesa, UPI, PIX, USDT, or card — and redeem across ChatGPT, Claude, Midjourney and more.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.25 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mt-6"
+            >
+              <FlagPills />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
               className="mt-8 flex flex-wrap gap-3"
             >
               <Link
@@ -80,7 +94,7 @@ function Index() {
                 Redeem code
               </Link>
             </motion.div>
-            <p className="mt-5 text-xs text-muted-foreground">No subscriptions. No expiry tricks. They pick the tool.</p>
+            <p className="mt-5 text-xs text-muted-foreground">No subscriptions. No expiry. They pick the tool — in any currency.</p>
           </div>
 
           <CardStack />
@@ -91,6 +105,12 @@ function Index() {
       <section className="border-y border-border bg-surface/40">
         <Marquee />
       </section>
+
+      {/* TRANSPARENCY */}
+      <TransparencyStrip />
+
+      {/* PAY YOUR WAY */}
+      <PayYourWay />
 
       {/* HOW IT WORKS */}
       <section className="max-w-7xl mx-auto px-5 sm:px-8 py-16">
@@ -143,6 +163,9 @@ function Index() {
           ))}
         </div>
       </section>
+
+      {/* BUILDER STORIES */}
+      <BuilderStories />
 
       {/* B2B BAND */}
       <section className="relative">
