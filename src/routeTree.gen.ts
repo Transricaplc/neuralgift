@@ -13,6 +13,7 @@ import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RedeemRouteImport } from './routes/redeem'
+import { Route as GlobalAccessRouteImport } from './routes/global-access'
 import { Route as BuyRouteImport } from './routes/buy'
 import { Route as BusinessRouteImport } from './routes/business'
 import { Route as AccountRouteImport } from './routes/account'
@@ -47,6 +48,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
 const RedeemRoute = RedeemRouteImport.update({
   id: '/redeem',
   path: '/redeem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GlobalAccessRoute = GlobalAccessRouteImport.update({
+  id: '/global-access',
+  path: '/global-access',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BuyRoute = BuyRouteImport.update({
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
+  '/global-access': typeof GlobalAccessRoute
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
+  '/global-access': typeof GlobalAccessRoute
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
+  '/global-access': typeof GlobalAccessRoute
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -200,6 +209,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/business'
     | '/buy'
+    | '/global-access'
     | '/redeem'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/business'
     | '/buy'
+    | '/global-access'
     | '/redeem'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -242,6 +253,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/business'
     | '/buy'
+    | '/global-access'
     | '/redeem'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -264,6 +276,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   BusinessRoute: typeof BusinessRouteWithChildren
   BuyRoute: typeof BuyRouteWithChildren
+  GlobalAccessRoute: typeof GlobalAccessRoute
   RedeemRoute: typeof RedeemRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -306,6 +319,13 @@ declare module '@tanstack/react-router' {
       path: '/redeem'
       fullPath: '/redeem'
       preLoaderRoute: typeof RedeemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/global-access': {
+      id: '/global-access'
+      path: '/global-access'
+      fullPath: '/global-access'
+      preLoaderRoute: typeof GlobalAccessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/buy': {
@@ -445,6 +465,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   BusinessRoute: BusinessRouteWithChildren,
   BuyRoute: BuyRouteWithChildren,
+  GlobalAccessRoute: GlobalAccessRoute,
   RedeemRoute: RedeemRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
