@@ -25,6 +25,7 @@ export function Nav() {
         <Link to="/" className="hover:opacity-80 transition-opacity"><Logo /></Link>
         <nav className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
           <Link to="/business/landing" className="hover:text-foreground transition-colors">For Business</Link>
+          <Link to="/global-access" className="hover:text-foreground transition-colors">Global Access</Link>
           <Link to="/redeem" className="hover:text-foreground transition-colors">Redeem</Link>
           <Link to="/account" className="hover:text-foreground transition-colors">Account</Link>
         </nav>
