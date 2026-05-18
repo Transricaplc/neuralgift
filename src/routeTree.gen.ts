@@ -18,6 +18,8 @@ import { Route as BuyRouteImport } from './routes/buy'
 import { Route as BusinessRouteImport } from './routes/business'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PayLocalRouteImport } from './routes/pay.local'
+import { Route as PayCryptoRouteImport } from './routes/pay.crypto'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as BuySuccessRouteImport } from './routes/buy.success'
 import { Route as BuyReturnRouteImport } from './routes/buy.return'
@@ -73,6 +75,16 @@ const AccountRoute = AccountRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PayLocalRoute = PayLocalRouteImport.update({
+  id: '/pay/local',
+  path: '/pay/local',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PayCryptoRoute = PayCryptoRouteImport.update({
+  id: '/pay/crypto',
+  path: '/pay/crypto',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
@@ -149,6 +161,8 @@ export interface FileRoutesByFullPath {
   '/buy/return': typeof BuyReturnRoute
   '/buy/success': typeof BuySuccessRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/pay/crypto': typeof PayCryptoRoute
+  '/pay/local': typeof PayLocalRoute
   '/api/public/send-email': typeof ApiPublicSendEmailRoute
   '/api/public/submit-lead': typeof ApiPublicSubmitLeadRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -171,6 +185,8 @@ export interface FileRoutesByTo {
   '/buy/return': typeof BuyReturnRoute
   '/buy/success': typeof BuySuccessRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/pay/crypto': typeof PayCryptoRoute
+  '/pay/local': typeof PayLocalRoute
   '/api/public/send-email': typeof ApiPublicSendEmailRoute
   '/api/public/submit-lead': typeof ApiPublicSubmitLeadRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -194,6 +210,8 @@ export interface FileRoutesById {
   '/buy/return': typeof BuyReturnRoute
   '/buy/success': typeof BuySuccessRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/pay/crypto': typeof PayCryptoRoute
+  '/pay/local': typeof PayLocalRoute
   '/api/public/send-email': typeof ApiPublicSendEmailRoute
   '/api/public/submit-lead': typeof ApiPublicSubmitLeadRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -218,6 +236,8 @@ export interface FileRouteTypes {
     | '/buy/return'
     | '/buy/success'
     | '/email/unsubscribe'
+    | '/pay/crypto'
+    | '/pay/local'
     | '/api/public/send-email'
     | '/api/public/submit-lead'
     | '/lovable/email/suppression'
@@ -240,6 +260,8 @@ export interface FileRouteTypes {
     | '/buy/return'
     | '/buy/success'
     | '/email/unsubscribe'
+    | '/pay/crypto'
+    | '/pay/local'
     | '/api/public/send-email'
     | '/api/public/submit-lead'
     | '/lovable/email/suppression'
@@ -262,6 +284,8 @@ export interface FileRouteTypes {
     | '/buy/return'
     | '/buy/success'
     | '/email/unsubscribe'
+    | '/pay/crypto'
+    | '/pay/local'
     | '/api/public/send-email'
     | '/api/public/submit-lead'
     | '/lovable/email/suppression'
@@ -282,6 +306,8 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  PayCryptoRoute: typeof PayCryptoRoute
+  PayLocalRoute: typeof PayLocalRoute
   ApiPublicSendEmailRoute: typeof ApiPublicSendEmailRoute
   ApiPublicSubmitLeadRoute: typeof ApiPublicSubmitLeadRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -354,6 +380,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pay/local': {
+      id: '/pay/local'
+      path: '/pay/local'
+      fullPath: '/pay/local'
+      preLoaderRoute: typeof PayLocalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pay/crypto': {
+      id: '/pay/crypto'
+      path: '/pay/crypto'
+      fullPath: '/pay/crypto'
+      preLoaderRoute: typeof PayCryptoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email/unsubscribe': {
@@ -471,6 +511,8 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  PayCryptoRoute: PayCryptoRoute,
+  PayLocalRoute: PayLocalRoute,
   ApiPublicSendEmailRoute: ApiPublicSendEmailRoute,
   ApiPublicSubmitLeadRoute: ApiPublicSubmitLeadRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
