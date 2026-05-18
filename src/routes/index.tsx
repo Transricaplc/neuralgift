@@ -12,6 +12,7 @@ import { FlagPills } from "@/components/neural/FlagPills";
 import { PayYourWay } from "@/components/neural/PayYourWay";
 import { BuilderStories } from "@/components/neural/BuilderStories";
 import { TransparencyStrip } from "@/components/neural/TransparencyStrip";
+import { CrisisAccess } from "@/components/neural/CrisisAccess";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -166,6 +167,9 @@ function Index() {
 
       {/* BUILDER STORIES */}
       <BuilderStories />
+
+      {/* CRISIS REGION ACCESS */}
+      <CrisisAccess />
 
       {/* B2B BAND */}
       <section className="relative">
