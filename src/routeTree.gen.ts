@@ -24,6 +24,7 @@ import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe
 import { Route as BuySuccessRouteImport } from './routes/buy.success'
 import { Route as BuyReturnRouteImport } from './routes/buy.return'
 import { Route as BusinessLandingRouteImport } from './routes/business.landing'
+import { Route as AdminCoverageRouteImport } from './routes/admin.coverage'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiPublicSubmitLeadRouteImport } from './routes/api/public/submit-lead'
 import { Route as ApiPublicSendEmailRouteImport } from './routes/api/public/send-email'
@@ -107,6 +108,11 @@ const BusinessLandingRoute = BusinessLandingRouteImport.update({
   path: '/landing',
   getParentRoute: () => BusinessRoute,
 } as any)
+const AdminCoverageRoute = AdminCoverageRouteImport.update({
+  id: '/admin/coverage',
+  path: '/admin/coverage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/coverage': typeof AdminCoverageRoute
   '/business/landing': typeof BusinessLandingRoute
   '/buy/return': typeof BuyReturnRoute
   '/buy/success': typeof BuySuccessRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/coverage': typeof AdminCoverageRoute
   '/business/landing': typeof BusinessLandingRoute
   '/buy/return': typeof BuyReturnRoute
   '/buy/success': typeof BuySuccessRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/coverage': typeof AdminCoverageRoute
   '/business/landing': typeof BusinessLandingRoute
   '/buy/return': typeof BuyReturnRoute
   '/buy/success': typeof BuySuccessRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/unsubscribe'
+    | '/admin/coverage'
     | '/business/landing'
     | '/buy/return'
     | '/buy/success'
@@ -256,6 +266,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/unsubscribe'
+    | '/admin/coverage'
     | '/business/landing'
     | '/buy/return'
     | '/buy/success'
@@ -280,6 +291,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/unsubscribe'
+    | '/admin/coverage'
     | '/business/landing'
     | '/buy/return'
     | '/buy/success'
@@ -305,6 +317,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
+  AdminCoverageRoute: typeof AdminCoverageRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   PayCryptoRoute: typeof PayCryptoRoute
   PayLocalRoute: typeof PayLocalRoute
@@ -424,6 +437,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessLandingRouteImport
       parentRoute: typeof BusinessRoute
     }
+    '/admin/coverage': {
+      id: '/admin/coverage'
+      path: '/admin/coverage'
+      fullPath: '/admin/coverage'
+      preLoaderRoute: typeof AdminCoverageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
       path: '/lovable/email/suppression'
@@ -510,6 +530,7 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   UnsubscribeRoute: UnsubscribeRoute,
+  AdminCoverageRoute: AdminCoverageRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   PayCryptoRoute: PayCryptoRoute,
   PayLocalRoute: PayLocalRoute,
