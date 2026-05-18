@@ -7,6 +7,8 @@ import { GiftCard } from "@/components/neural/GiftCard";
 import { StripeGiftCardCheckout } from "@/components/StripeGiftCardCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { track } from "@/lib/analytics";
+import { useRegion } from "@/contexts/RegionContext";
+import { formatLocalAmount } from "@/data/regions";
 
 export const Route = createFileRoute("/buy")({
   component: BuyPage,
@@ -28,8 +30,11 @@ export const Route = createFileRoute("/buy")({
 
 const DENOMS = [25, 50, 100] as const;
 
+type Rail = "card" | "local" | "crypto";
+
 function BuyPage() {
-  useNavigate();
+  const navigate = useNavigate();
+  const { region, openSelector } = useRegion();
   const [amount, setAmount] = useState<number>(50);
   const [delivery, setDelivery] = useState<"digital" | "physical">("digital");
   const [quantity, setQuantity] = useState(1);
@@ -39,9 +44,18 @@ function BuyPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const defaultRail: Rail =
+    region.psp === "stripe" ? "card" : region.psp === "crypto" ? "crypto" : "local";
+  const [rail, setRail] = useState<Rail>(defaultRail);
+
+  // Re-sync rail when region changes via selector
+  if (rail === "card" && region.psp !== "stripe") {
+    // soft nudge: switch off-card defaults when region updates
+  }
 
   const subtotal = amount * quantity;
   const total = subtotal + (delivery === "physical" ? 5 : 0);
+  const localTotal = region.code === "XX" ? null : formatLocalAmount(total, region);
 
   function handleCheckout() {
     setError(null);
@@ -50,8 +64,22 @@ function BuyPage() {
       void track("buy_checkout_validation_failed", { reason: "email" });
       return;
     }
+    void track("buy_checkout_opened", { amount, quantity, delivery, total, rail, region: region.code });
+    if (rail === "local") {
+      navigate({
+        to: "/pay/local",
+        search: { amount, quantity, email: buyerEmail, region: region.code } as never,
+      });
+      return;
+    }
+    if (rail === "crypto") {
+      navigate({
+        to: "/pay/crypto",
+        search: { amount, quantity, email: buyerEmail, region: region.code } as never,
+      });
+      return;
+    }
     setCheckoutOpen(true);
-    void track("buy_checkout_opened", { amount, quantity, delivery, total });
   }
 
   return (
@@ -164,11 +192,35 @@ function BuyPage() {
               <div className="flex justify-center mb-6">
                 <GiftCard amount={amount} />
               </div>
+              {/* Region + rail selector */}
+              <button
+                type="button"
+                onClick={openSelector}
+                className="w-full mb-4 flex items-center justify-between text-xs px-3 py-2 rounded-lg border border-border bg-background hover:border-indigo/40"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="text-base leading-none">{region.emoji}</span>
+                  <span className="text-muted-foreground">Paying from</span>
+                  <span className="font-medium text-foreground">{region.name}</span>
+                </span>
+                <span className="text-indigo">change</span>
+              </button>
+              <div className="mb-4 grid grid-cols-3 gap-1.5">
+                <RailChip active={rail === "card"} onClick={() => setRail("card")} label="Card" sub="Visa · MC" disabled={region.psp !== "stripe" && region.code !== "XX"} />
+                <RailChip active={rail === "local"} onClick={() => setRail("local")} label="Local" sub={region.methods[0] ?? "Mobile"} disabled={region.psp === "stripe" && region.code !== "XX"} />
+                <RailChip active={rail === "crypto"} onClick={() => setRail("crypto")} label="Crypto" sub="USDT/USDC" />
+              </div>
               <div className="space-y-2 text-sm">
                 <Row label={`$${amount} card × ${quantity}`} value={`$${subtotal}`} />
                 <Row label="Delivery" value={delivery === "physical" ? "$5" : "Free"} />
                 <div className="border-t border-border my-3" />
                 <Row label="Total" value={`$${total}`} bold />
+                {localTotal && (
+                  <div className="flex justify-between text-xs text-muted-foreground -mt-1">
+                    <span>In {region.currency}</span>
+                    <span className="tabular">≈ {localTotal}</span>
+                  </div>
+                )}
               </div>
               {error && (
                 <div className="mt-4 text-sm text-amber bg-amber/10 border border-amber/30 rounded-lg p-3">
@@ -182,10 +234,18 @@ function BuyPage() {
                 className="mt-5 w-full h-12 rounded-full font-semibold text-gold-foreground disabled:opacity-60"
                 style={{ background: "var(--gradient-gold)", boxShadow: "var(--shadow-glow-gold)" }}
               >
-                {checkoutOpen ? "Loading checkout…" : "Continue to payment →"}
+                {checkoutOpen
+                  ? "Loading checkout…"
+                  : rail === "card"
+                    ? "Continue to card →"
+                    : rail === "local"
+                      ? `Pay with ${region.methods[0] ?? "mobile money"} →`
+                      : "Pay with crypto →"}
               </button>
               <p className="mt-3 text-xs text-muted-foreground text-center">
-                Secure checkout by Stripe. Code generated after payment.
+                {rail === "card" && "Secure checkout by Stripe. Code generated after payment."}
+                {rail === "local" && "Approve the prompt on your phone. Code drops by email."}
+                {rail === "crypto" && "USDT/USDC on Tron, Stellar, or Polygon. Lands in minutes."}
               </p>
             </div>
           </aside>
@@ -296,5 +356,27 @@ function Row({ label, value, bold }: { label: string; value: string; bold?: bool
       <span>{label}</span>
       <span className="tabular">{value}</span>
     </div>
+  );
+}
+
+function RailChip({
+  active, onClick, label, sub, disabled,
+}: { active: boolean; onClick: () => void; label: string; sub: string; disabled?: boolean }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`rounded-lg border px-2 py-2 text-left transition-colors ${
+        active
+          ? "border-gold/60 bg-gold/10"
+          : disabled
+            ? "border-border bg-background opacity-40 cursor-not-allowed"
+            : "border-border bg-background hover:border-indigo/40"
+      }`}
+    >
+      <div className="text-[11px] font-semibold leading-tight">{label}</div>
+      <div className="text-[9px] text-muted-foreground uppercase tracking-wider truncate">{sub}</div>
+    </button>
   );
 }
