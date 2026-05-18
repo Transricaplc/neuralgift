@@ -7,6 +7,8 @@ import { AI_SERVICES, type AIService } from "@/lib/services";
 import { ServiceIcon } from "@/components/neural/ServiceIcon";
 import { supabase } from "@/integrations/supabase/client";
 import { track } from "@/lib/analytics";
+import { useRegion } from "@/contexts/RegionContext";
+import { formatLocalAmount } from "@/data/regions";
 import { z } from "zod";
 import { zodValidator } from "@tanstack/zod-adapter";
 
@@ -35,6 +37,7 @@ type Order = { id: string; amount: number; status: string };
 
 function RedeemPage() {
   const initial = Route.useSearch().code ?? "";
+  const { region } = useRegion();
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [code, setCode] = useState(initial);
   const [order, setOrder] = useState<Order | null>(null);
@@ -162,6 +165,11 @@ function RedeemPage() {
                 <div>
                   <div className="text-xs uppercase tracking-widest text-muted-foreground">Card balance</div>
                   <div className="text-3xl font-display font-bold tabular text-gradient-gold">${balance}</div>
+                  {region.code !== "XX" && region.currency !== "USD" && (
+                    <div className="text-[11px] text-muted-foreground tabular mt-0.5">
+                      ≈ {formatLocalAmount(balance, region)} {region.emoji}
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1 max-w-md min-w-[220px]">
                   <div className="flex justify-between text-xs text-muted-foreground mb-1">
