@@ -170,6 +170,7 @@ function AuthPanel() {
 
 function Dashboard({ session }: { session: Session }) {
   const [orders, setOrders] = useState<Order[] | null>(null);
+  const [tab, setTab] = useState<"sent" | "received">("sent");
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
@@ -182,6 +183,11 @@ function Dashboard({ session }: { session: Session }) {
       else setOrders((data ?? []) as Order[]);
     })();
   }, [session.user.id]);
+
+  const userEmail = (session.user.email ?? "").toLowerCase();
+  const sent = (orders ?? []).filter((o) => !o.recipient_email || o.recipient_email.toLowerCase() !== userEmail);
+  const received = (orders ?? []).filter((o) => o.recipient_email?.toLowerCase() === userEmail);
+  const visible = tab === "sent" ? sent : received;
 
   async function resend(code: string) {
     await fetch("/api/public/send-email", {
@@ -209,19 +215,41 @@ function Dashboard({ session }: { session: Session }) {
 
       {err && <div className="text-sm text-amber bg-amber/10 border border-amber/30 rounded-lg p-3 mb-6">{err}</div>}
 
+      <div className="mb-6 inline-flex rounded-full border border-border bg-surface p-1">
+        {(["sent", "received"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`px-4 h-9 rounded-full text-xs font-semibold uppercase tracking-widest transition-colors ${
+              tab === t ? "bg-indigo text-indigo-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t === "sent" ? `Sent (${sent.length})` : `Received 🎁 (${received.length})`}
+          </button>
+        ))}
+      </div>
+
       {!orders ? (
         <div className="text-muted-foreground">Loading…</div>
-      ) : orders.length === 0 ? (
+      ) : visible.length === 0 ? (
         <div className="bg-surface border border-border rounded-3xl p-10 text-center">
-          <h2 className="font-display text-xl font-semibold">No orders yet</h2>
-          <p className="mt-2 text-sm text-muted-foreground">When you buy a card, it'll show up here.</p>
-          <Link to="/buy" className="inline-flex mt-5 h-11 items-center px-5 rounded-full bg-indigo text-indigo-foreground font-semibold">
-            Buy a card →
-          </Link>
+          <h2 className="font-display text-xl font-semibold">
+            {tab === "sent" ? "No orders yet" : "No gifts received yet"}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {tab === "sent"
+              ? "When you buy a card, it'll show up here."
+              : "When someone sends you a NeuralGift card to this email, it'll appear here automatically."}
+          </p>
+          {tab === "sent" && (
+            <Link to="/buy" className="inline-flex mt-5 h-11 items-center px-5 rounded-full bg-indigo text-indigo-foreground font-semibold">
+              Buy a card →
+            </Link>
+          )}
         </div>
       ) : (
         <div className="space-y-3">
-          {orders.map((o) => {
+          {visible.map((o) => {
             const short = o.redemption_code.replace(/-/g, "").slice(0, 16).toUpperCase();
             const statusColor =
               o.status === "redeemed" ? "text-indigo border-indigo/30 bg-indigo/10"
@@ -236,11 +264,21 @@ function Dashboard({ session }: { session: Session }) {
                       <span className={`text-[10px] uppercase tracking-widest px-2 py-1 rounded-full border ${statusColor}`}>
                         {o.status}
                       </span>
+                      {tab === "received" && (
+                        <span className="text-[10px] uppercase tracking-widest px-2 py-1 rounded-full border border-gold/40 text-gold bg-gold/10">
+                          Gift for you
+                        </span>
+                      )}
                     </div>
                     <div className="mt-1 text-xs text-muted-foreground">
                       {new Date(o.created_at).toLocaleDateString()} · {o.quantity} × ${o.amount} · {o.delivery_type}
-                      {o.recipient_email && ` · for ${o.recipient_email}`}
+                      {tab === "sent" && o.recipient_email && ` · for ${o.recipient_email}`}
                     </div>
+                    {tab === "received" && o.message && (
+                      <div className="mt-3 text-sm italic text-foreground/80 border-l-2 border-gold/40 pl-3 max-w-xl">
+                        "{o.message}"
+                      </div>
+                    )}
                   </div>
                   <div className="flex gap-2">
                     {o.status !== "redeemed" && (
@@ -252,12 +290,14 @@ function Dashboard({ session }: { session: Session }) {
                         Redeem →
                       </Link>
                     )}
-                    <button
-                      onClick={() => resend(o.redemption_code)}
-                      className="h-9 inline-flex items-center px-4 rounded-full text-xs font-semibold border border-border hover:bg-elevated"
-                    >
-                      Resend email
-                    </button>
+                    {tab === "sent" && (
+                      <button
+                        onClick={() => resend(o.redemption_code)}
+                        className="h-9 inline-flex items-center px-4 rounded-full text-xs font-semibold border border-border hover:bg-elevated"
+                      >
+                        Resend email
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="mt-4 bg-background border border-border rounded-xl p-3 flex items-center justify-between gap-3">
