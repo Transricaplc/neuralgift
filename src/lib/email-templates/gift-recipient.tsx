@@ -24,7 +24,7 @@ const GiftRecipientEmail = ({
   quantity = 1,
 }: GiftProps) => {
   const short = redemptionCode.replace(/-/g, '').slice(0, 16).toUpperCase()
-  const redeemUrl = `${APP_URL}/redeem?code=${encodeURIComponent(redemptionCode)}`
+  const redeemUrl = `${APP_URL}/claim?code=${encodeURIComponent(redemptionCode)}`
   const sender = buyerName || buyerEmail || 'A friend'
   const total = amount * (quantity || 1)
   return (
@@ -53,7 +53,7 @@ const GiftRecipientEmail = ({
             </Section>
           ) : null}
           <Section style={{ textAlign: 'center', margin: '32px 0' }}>
-            <Button style={button} href={redeemUrl}>Redeem your card</Button>
+            <Button style={button} href={redeemUrl}>Unwrap your gift</Button>
           </Section>
           <Hr style={hr} />
           <Text style={footer}>

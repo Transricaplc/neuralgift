@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { z } from "zod";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { ShareInvite } from "@/components/neural/ShareInvite";
+import { Gift } from "lucide-react";
 
 const search = z.object({ code: z.string() });
 
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/buy/success")({
 function SuccessPage() {
   const { code } = Route.useSearch();
   const short = code.replace(/-/g, "").slice(0, 16).toUpperCase();
+  const claimUrl = `/claim?code=${encodeURIComponent(code)}`;
   return (
     <div className="min-h-screen flex flex-col">
       <Nav />
@@ -38,6 +40,23 @@ function SuccessPage() {
               Redeem now →
             </Link>
             <Link to="/" className="h-11 inline-flex items-center px-5 rounded-full border border-border">Back home</Link>
+          </div>
+          <div className="mt-6 text-left bg-background border border-border rounded-2xl p-5">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-full bg-gold/15 text-gold flex items-center justify-center shrink-0">
+                <Gift size={16} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-display font-semibold text-sm">Share the unwrap link</div>
+                <p className="text-[11px] text-muted-foreground mt-0.5">A personal claim page — no account needed to open.</p>
+                <ShareInvite
+                  title=""
+                  message="I sent you a NeuralGift card — unwrap it here:"
+                  url={claimUrl}
+                  surface="buy_success_claim"
+                />
+              </div>
+            </div>
           </div>
           <div className="mt-6 text-left">
             <ShareInvite
