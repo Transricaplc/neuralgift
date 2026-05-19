@@ -104,6 +104,14 @@ function HowItWorksPage() {
                     <div className="mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-widest text-gold/90">
                       <span className="w-6 h-px bg-gold/60" /> {s.detail}
                     </div>
+                    {s.n === "03" && (
+                      <Link
+                        to="/studio"
+                        className="mt-5 inline-flex h-10 items-center gap-1.5 px-4 rounded-full text-xs font-semibold border border-gold/40 text-gold hover:bg-gold/10"
+                      >
+                        Try the allocation studio <ArrowRight size={12} />
+                      </Link>
+                    )}
                   </div>
                 </motion.div>
               );
