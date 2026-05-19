@@ -13,6 +13,8 @@ import { PayYourWay } from "@/components/neural/PayYourWay";
 import { BuilderStories } from "@/components/neural/BuilderStories";
 import { TransparencyStrip } from "@/components/neural/TransparencyStrip";
 import { CrisisAccess } from "@/components/neural/CrisisAccess";
+import { Testimonials } from "@/components/neural/Testimonials";
+import { FAQ } from "@/components/neural/FAQ";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -171,6 +173,9 @@ function Index() {
       {/* CRISIS REGION ACCESS */}
       <CrisisAccess />
 
+      {/* SOCIAL PROOF */}
+      <Testimonials />
+
       {/* B2B BAND */}
       <section className="relative">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 py-20">
@@ -207,6 +212,9 @@ function Index() {
           </div>
         </div>
       </section>
+
+      {/* FAQ */}
+      <FAQ />
 
       {/* FINAL CTA */}
       <section className="max-w-4xl mx-auto px-5 sm:px-8 py-20 text-center">
