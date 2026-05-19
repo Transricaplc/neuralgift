@@ -153,3 +153,43 @@ html { color-scheme: dark; }
   }
   .hero-glow { background: var(--gradient-hero); }
 }
+
+/* ───────────────────────── Motion utilities (Phase B polish) ───────────────────────── */
+@keyframes ng-shimmer {
+  0%   { transform: translateX(-120%) skewX(-12deg); opacity: 0; }
+  35%  { opacity: 0.9; }
+  100% { transform: translateX(220%) skewX(-12deg); opacity: 0; }
+}
+@keyframes ng-float-slow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+@keyframes ng-pulse-ring {
+  0%   { box-shadow: 0 0 0 0 oklch(0.83 0.165 88 / 0.55); }
+  100% { box-shadow: 0 0 0 16px oklch(0.83 0.165 88 / 0); }
+}
+
+.ng-shimmer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.ng-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, oklch(1 0 0 / 0.18) 50%, transparent 70%);
+  transform: translateX(-120%) skewX(-12deg);
+  animation: ng-shimmer 4.5s ease-in-out infinite;
+  animation-delay: 1.2s;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.ng-float-slow { animation: ng-float-slow 6s ease-in-out infinite; }
+.ng-pulse-ring { animation: ng-pulse-ring 2.4s ease-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ng-shimmer::after,
+  .ng-float-slow,
+  .ng-pulse-ring { animation: none !important; }
+}
