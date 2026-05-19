@@ -51,7 +51,7 @@ function SuccessPage() {
                 <p className="text-[11px] text-muted-foreground mt-0.5">A personal claim page — no account needed to open.</p>
                 <ShareInvite
                   title=""
-                  message={`I sent you a $${"" /* amount unknown here */} NeuralGift card — unwrap it here:`}
+                  message="I sent you a NeuralGift card — unwrap it here:"
                   url={claimUrl}
                   surface="buy_success_claim"
                 />
