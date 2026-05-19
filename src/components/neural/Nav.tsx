@@ -24,6 +24,7 @@ export function Nav() {
       <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
         <Link to="/" className="hover:opacity-80 transition-opacity"><Logo /></Link>
         <nav className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
+          <Link to="/how-it-works" className="hover:text-foreground transition-colors">How it works</Link>
           <Link to="/business/landing" className="hover:text-foreground transition-colors">For Business</Link>
           <Link to="/global-access" className="hover:text-foreground transition-colors">Global Access</Link>
           <Link to="/redeem" className="hover:text-foreground transition-colors">Redeem</Link>
