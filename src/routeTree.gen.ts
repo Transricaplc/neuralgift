@@ -14,6 +14,7 @@ import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RedeemRouteImport } from './routes/redeem'
+import { Route as ManifestoRouteImport } from './routes/manifesto'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as GlobalAccessRouteImport } from './routes/global-access'
 import { Route as ClaimRouteImport } from './routes/claim'
@@ -59,6 +60,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
 const RedeemRoute = RedeemRouteImport.update({
   id: '/redeem',
   path: '/redeem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManifestoRoute = ManifestoRouteImport.update({
+  id: '/manifesto',
+  path: '/manifesto',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HowItWorksRoute = HowItWorksRouteImport.update({
@@ -179,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/claim': typeof ClaimRoute
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/manifesto': typeof ManifestoRoute
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/claim': typeof ClaimRoute
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/manifesto': typeof ManifestoRoute
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/claim': typeof ClaimRoute
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/manifesto': typeof ManifestoRoute
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -266,6 +275,7 @@ export interface FileRouteTypes {
     | '/claim'
     | '/global-access'
     | '/how-it-works'
+    | '/manifesto'
     | '/redeem'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -294,6 +304,7 @@ export interface FileRouteTypes {
     | '/claim'
     | '/global-access'
     | '/how-it-works'
+    | '/manifesto'
     | '/redeem'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -322,6 +333,7 @@ export interface FileRouteTypes {
     | '/claim'
     | '/global-access'
     | '/how-it-works'
+    | '/manifesto'
     | '/redeem'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -351,6 +363,7 @@ export interface RootRouteChildren {
   ClaimRoute: typeof ClaimRoute
   GlobalAccessRoute: typeof GlobalAccessRoute
   HowItWorksRoute: typeof HowItWorksRoute
+  ManifestoRoute: typeof ManifestoRoute
   RedeemRoute: typeof RedeemRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -404,6 +417,13 @@ declare module '@tanstack/react-router' {
       path: '/redeem'
       fullPath: '/redeem'
       preLoaderRoute: typeof RedeemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/manifesto': {
+      id: '/manifesto'
+      path: '/manifesto'
+      fullPath: '/manifesto'
+      preLoaderRoute: typeof ManifestoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/how-it-works': {
@@ -588,6 +608,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClaimRoute: ClaimRoute,
   GlobalAccessRoute: GlobalAccessRoute,
   HowItWorksRoute: HowItWorksRoute,
+  ManifestoRoute: ManifestoRoute,
   RedeemRoute: RedeemRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
