@@ -9,6 +9,7 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { track } from "@/lib/analytics";
 import { useRegion } from "@/contexts/RegionContext";
 import { formatLocalAmount } from "@/data/regions";
+import { OccasionPicker, type Occasion } from "@/components/neural/OccasionPicker";
 
 export const Route = createFileRoute("/buy")({
   component: BuyPage,
@@ -48,6 +49,7 @@ function BuyPage() {
   const [recipientEmail, setRecipientEmail] = useState("");
   const [buyerEmail, setBuyerEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [occasion, setOccasion] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const defaultRail: Rail =
@@ -62,6 +64,15 @@ function BuyPage() {
   const subtotal = amount * quantity;
   const total = subtotal + (delivery === "physical" ? 5 : 0);
   const localTotal = region.code === "XX" ? null : formatLocalAmount(total, region);
+
+  function pickOccasion(o: Occasion) {
+    setOccasion(o.id);
+    void track("buy_occasion_picked", { occasion: o.id });
+    if (o.id === "custom") return;
+    if (o.amount > 0) setAmount(o.amount);
+    // Only overwrite message if the buyer hasn't written something custom yet
+    if (!message.trim() || message.length < 4) setMessage(o.message);
+  }
 
   function handleCheckout() {
     setError(null);
@@ -101,6 +112,11 @@ function BuyPage() {
         <div className="grid lg:grid-cols-[1fr_380px] gap-8 lg:gap-10">
           {/* LEFT: form */}
           <div className="space-y-8">
+            {/* Occasion */}
+            <Section title="What's the occasion?" hint="Preloads an amount + a note. You can edit anything.">
+              <OccasionPicker selectedId={occasion} onSelect={pickOccasion} />
+            </Section>
+
             {/* Denomination */}
             <Section title="Denomination">
               <div className="grid grid-cols-3 gap-3">
