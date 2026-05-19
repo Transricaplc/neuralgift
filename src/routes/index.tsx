@@ -55,9 +55,10 @@ function Index() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.05 }}
-              className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight"
+              className="font-display text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-7xl font-bold leading-[1.05] tracking-tight text-balance"
             >
-              Gift the Future <br /> of <span className="text-gradient-gold">Thinking.</span>
+              Gift the Future of{" "}
+              <span className="text-gradient-gold whitespace-nowrap">Thinking.</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 12 }}
