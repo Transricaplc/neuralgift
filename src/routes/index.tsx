@@ -13,6 +13,8 @@ import { PayYourWay } from "@/components/neural/PayYourWay";
 import { BuilderStories } from "@/components/neural/BuilderStories";
 import { TransparencyStrip } from "@/components/neural/TransparencyStrip";
 import { CrisisAccess } from "@/components/neural/CrisisAccess";
+import { Testimonials } from "@/components/neural/Testimonials";
+import { FAQ } from "@/components/neural/FAQ";
 
 export const Route = createFileRoute("/")({
   component: Index,
