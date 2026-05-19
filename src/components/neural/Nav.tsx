@@ -27,7 +27,7 @@ export function Nav() {
           <Link to="/how-it-works" className="hover:text-foreground transition-colors">How it works</Link>
           <Link to="/business/landing" className="hover:text-foreground transition-colors">For Business</Link>
           <Link to="/global-access" className="hover:text-foreground transition-colors">Global Access</Link>
-          <Link to="/redeem" className="hover:text-foreground transition-colors">Redeem</Link>
+          <Link to="/manifesto" className="hover:text-foreground transition-colors">Manifesto</Link>
           <Link to="/account" className="hover:text-foreground transition-colors">Account</Link>
         </nav>
         <div className="flex items-center gap-2">
