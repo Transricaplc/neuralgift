@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Nav } from "@/components/neural/Nav";
@@ -9,6 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { track } from "@/lib/analytics";
 import { useRegion } from "@/contexts/RegionContext";
 import { formatLocalAmount } from "@/data/regions";
+import { ShareInvite } from "@/components/neural/ShareInvite";
+import { Gift } from "lucide-react";
 import { z } from "zod";
 import { zodValidator } from "@tanstack/zod-adapter";
 
@@ -261,6 +263,39 @@ function RedeemPage() {
                     </div>
                   );
                 })}
+              </div>
+
+              {remaining > 0 && (
+                <div className="mt-6 bg-surface border border-border rounded-2xl p-6 text-left">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-indigo/15 text-indigo flex items-center justify-center shrink-0">
+                      <Gift size={18} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-display font-semibold">${remaining} left on your card.</div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Pay it forward — send someone their first AI tools. We waive the markup on forwarded gifts.
+                      </p>
+                      <Link
+                        to="/buy"
+                        search={{ ref: "forward", amount: remaining } as never}
+                        onClick={() => void track("gift_forward_initiated", { remaining })}
+                        className="mt-3 inline-flex items-center gap-1.5 h-10 px-4 rounded-full bg-indigo text-indigo-foreground text-sm font-semibold"
+                      >
+                        Gift it forward →
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-6 text-left">
+                <ShareInvite
+                  title="Tell someone who'd love this"
+                  message="NeuralGift just unlocked ChatGPT, Claude & Midjourney for me — one card, every AI tool."
+                  url="/?ref=redeemed"
+                  surface="redeem_done"
+                />
               </div>
             </motion.div>
           )}
