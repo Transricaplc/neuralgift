@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
+import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RedeemRouteImport } from './routes/redeem'
@@ -38,6 +39,11 @@ import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/publi
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
   path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -176,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/studio': typeof StudioRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/coverage': typeof AdminCoverageRoute
   '/business/landing': typeof BusinessLandingRoute
@@ -203,6 +210,7 @@ export interface FileRoutesByTo {
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/studio': typeof StudioRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/coverage': typeof AdminCoverageRoute
   '/business/landing': typeof BusinessLandingRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/studio': typeof StudioRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/coverage': typeof AdminCoverageRoute
   '/business/landing': typeof BusinessLandingRoute
@@ -260,6 +269,7 @@ export interface FileRouteTypes {
     | '/redeem'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/studio'
     | '/unsubscribe'
     | '/admin/coverage'
     | '/business/landing'
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/redeem'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/studio'
     | '/unsubscribe'
     | '/admin/coverage'
     | '/business/landing'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/redeem'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/studio'
     | '/unsubscribe'
     | '/admin/coverage'
     | '/business/landing'
@@ -342,6 +354,7 @@ export interface RootRouteChildren {
   RedeemRoute: typeof RedeemRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StudioRoute: typeof StudioRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   AdminCoverageRoute: typeof AdminCoverageRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
@@ -363,6 +376,13 @@ declare module '@tanstack/react-router' {
       path: '/unsubscribe'
       fullPath: '/unsubscribe'
       preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -571,6 +591,7 @@ const rootRouteChildren: RootRouteChildren = {
   RedeemRoute: RedeemRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StudioRoute: StudioRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   AdminCoverageRoute: AdminCoverageRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
