@@ -1,5 +1,5 @@
 import { motion, type Variants } from "framer-motion";
-import type { ReactNode } from "react";
+import type { ElementType, ReactNode } from "react";
 
 type Direction = "up" | "down" | "left" | "right" | "none";
 
@@ -31,7 +31,7 @@ export function Reveal({
   direction?: Direction;
   once?: boolean;
   className?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: ElementType;
 }) {
   const { x, y } = OFFSETS[direction];
   const variants: Variants = {
