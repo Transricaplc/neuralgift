@@ -4,6 +4,7 @@ import { Footer } from "@/components/neural/Footer";
 import { motion } from "framer-motion";
 import { z } from "zod";
 import { zodValidator } from "@tanstack/zod-adapter";
+import { ShareInvite } from "@/components/neural/ShareInvite";
 
 const search = z.object({ code: z.string() });
 
@@ -37,6 +38,14 @@ function SuccessPage() {
               Redeem now →
             </Link>
             <Link to="/" className="h-11 inline-flex items-center px-5 rounded-full border border-border">Back home</Link>
+          </div>
+          <div className="mt-6 text-left">
+            <ShareInvite
+              title="Share the moment"
+              message="I just sent an AI gift card on NeuralGift — one card, every tool."
+              url="/?ref=share"
+              surface="buy_success"
+            />
           </div>
         </motion.div>
       </main>
