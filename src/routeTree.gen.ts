@@ -14,6 +14,7 @@ import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RedeemRouteImport } from './routes/redeem'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ManifestoRouteImport } from './routes/manifesto'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as GlobalAccessRouteImport } from './routes/global-access'
@@ -60,6 +61,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
 const RedeemRoute = RedeemRouteImport.update({
   id: '/redeem',
   path: '/redeem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ManifestoRoute = ManifestoRouteImport.update({
@@ -186,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
   '/manifesto': typeof ManifestoRoute
+  '/pricing': typeof PricingRoute
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -215,6 +222,7 @@ export interface FileRoutesByTo {
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
   '/manifesto': typeof ManifestoRoute
+  '/pricing': typeof PricingRoute
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -245,6 +253,7 @@ export interface FileRoutesById {
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
   '/manifesto': typeof ManifestoRoute
+  '/pricing': typeof PricingRoute
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -276,6 +285,7 @@ export interface FileRouteTypes {
     | '/global-access'
     | '/how-it-works'
     | '/manifesto'
+    | '/pricing'
     | '/redeem'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -305,6 +315,7 @@ export interface FileRouteTypes {
     | '/global-access'
     | '/how-it-works'
     | '/manifesto'
+    | '/pricing'
     | '/redeem'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -334,6 +345,7 @@ export interface FileRouteTypes {
     | '/global-access'
     | '/how-it-works'
     | '/manifesto'
+    | '/pricing'
     | '/redeem'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -364,6 +376,7 @@ export interface RootRouteChildren {
   GlobalAccessRoute: typeof GlobalAccessRoute
   HowItWorksRoute: typeof HowItWorksRoute
   ManifestoRoute: typeof ManifestoRoute
+  PricingRoute: typeof PricingRoute
   RedeemRoute: typeof RedeemRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -417,6 +430,13 @@ declare module '@tanstack/react-router' {
       path: '/redeem'
       fullPath: '/redeem'
       preLoaderRoute: typeof RedeemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/manifesto': {
@@ -609,6 +629,7 @@ const rootRouteChildren: RootRouteChildren = {
   GlobalAccessRoute: GlobalAccessRoute,
   HowItWorksRoute: HowItWorksRoute,
   ManifestoRoute: ManifestoRoute,
+  PricingRoute: PricingRoute,
   RedeemRoute: RedeemRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
@@ -629,3 +650,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
