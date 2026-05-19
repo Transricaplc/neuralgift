@@ -12,6 +12,10 @@ import { formatLocalAmount } from "@/data/regions";
 
 export const Route = createFileRoute("/buy")({
   component: BuyPage,
+  validateSearch: (s: Record<string, unknown>): { ref?: string; amount?: number } => ({
+    ref: typeof s.ref === "string" ? s.ref.slice(0, 32) : undefined,
+    amount: typeof s.amount === "string" ? Number(s.amount) : (s.amount as number | undefined),
+  }),
   head: () => ({
     meta: [
       { title: "Buy a card — NeuralGift" },
@@ -35,7 +39,9 @@ type Rail = "card" | "local" | "crypto";
 function BuyPage() {
   const navigate = useNavigate();
   const { region, openSelector } = useRegion();
-  const [amount, setAmount] = useState<number>(50);
+  const search = Route.useSearch();
+  const initialAmount = search.amount && search.amount >= 5 ? Math.min(500, Math.round(search.amount)) : 50;
+  const [amount, setAmount] = useState<number>(initialAmount);
   const [delivery, setDelivery] = useState<"digital" | "physical">("digital");
   const [quantity, setQuantity] = useState(1);
   const [recipientName, setRecipientName] = useState("");
