@@ -21,7 +21,7 @@ export function GiftCard({
           : { delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }
       }
       whileHover={{ y: -8, rotate: rotate * 0.5, transition: { duration: 0.3 } }}
-      className={`relative aspect-[1.6/1] w-full max-w-[320px] rounded-2xl overflow-hidden ${className}`}
+      className={`ng-shimmer relative aspect-[1.6/1] w-full max-w-[320px] rounded-2xl overflow-hidden ${className}`}
       style={{
         background: "var(--gradient-card-face)",
         boxShadow: "var(--shadow-card), var(--shadow-glow-indigo)",
