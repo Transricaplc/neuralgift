@@ -13,6 +13,8 @@ export function Footer() {
           <div className="font-display font-semibold mb-3">Product</div>
           <ul className="space-y-2 text-muted-foreground">
             <li><Link to="/buy" className="hover:text-foreground">Buy a card</Link></li>
+            <li><Link to="/pricing" className="hover:text-foreground">Pricing</Link></li>
+            <li><Link to="/studio" className="hover:text-foreground">Allocation studio</Link></li>
             <li><Link to="/redeem" className="hover:text-foreground">Redeem</Link></li>
           </ul>
         </div>
@@ -26,6 +28,8 @@ export function Footer() {
         <div className="text-sm">
           <div className="font-display font-semibold mb-3">Company</div>
           <ul className="space-y-2 text-muted-foreground">
+            <li><Link to="/manifesto" className="hover:text-foreground">Manifesto</Link></li>
+            <li><Link to="/global-access" className="hover:text-foreground">Global access</Link></li>
             <li>support@neuralgift.app</li>
           </ul>
         </div>
