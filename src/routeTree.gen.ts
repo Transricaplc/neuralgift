@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RedeemRouteImport } from './routes/redeem'
 import { Route as GlobalAccessRouteImport } from './routes/global-access'
+import { Route as ClaimRouteImport } from './routes/claim'
 import { Route as BuyRouteImport } from './routes/buy'
 import { Route as BusinessRouteImport } from './routes/business'
 import { Route as AccountRouteImport } from './routes/account'
@@ -56,6 +57,11 @@ const RedeemRoute = RedeemRouteImport.update({
 const GlobalAccessRoute = GlobalAccessRouteImport.update({
   id: '/global-access',
   path: '/global-access',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClaimRoute = ClaimRouteImport.update({
+  id: '/claim',
+  path: '/claim',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BuyRoute = BuyRouteImport.update({
@@ -158,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
+  '/claim': typeof ClaimRoute
   '/global-access': typeof GlobalAccessRoute
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
+  '/claim': typeof ClaimRoute
   '/global-access': typeof GlobalAccessRoute
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -209,6 +217,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
+  '/claim': typeof ClaimRoute
   '/global-access': typeof GlobalAccessRoute
   '/redeem': typeof RedeemRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -236,6 +245,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/business'
     | '/buy'
+    | '/claim'
     | '/global-access'
     | '/redeem'
     | '/robots.txt'
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/business'
     | '/buy'
+    | '/claim'
     | '/global-access'
     | '/redeem'
     | '/robots.txt'
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/business'
     | '/buy'
+    | '/claim'
     | '/global-access'
     | '/redeem'
     | '/robots.txt'
@@ -312,6 +324,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   BusinessRoute: typeof BusinessRouteWithChildren
   BuyRoute: typeof BuyRouteWithChildren
+  ClaimRoute: typeof ClaimRoute
   GlobalAccessRoute: typeof GlobalAccessRoute
   RedeemRoute: typeof RedeemRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
@@ -365,6 +378,13 @@ declare module '@tanstack/react-router' {
       path: '/global-access'
       fullPath: '/global-access'
       preLoaderRoute: typeof GlobalAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/claim': {
+      id: '/claim'
+      path: '/claim'
+      fullPath: '/claim'
+      preLoaderRoute: typeof ClaimRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/buy': {
@@ -525,6 +545,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   BusinessRoute: BusinessRouteWithChildren,
   BuyRoute: BuyRouteWithChildren,
+  ClaimRoute: ClaimRoute,
   GlobalAccessRoute: GlobalAccessRoute,
   RedeemRoute: RedeemRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
@@ -545,12 +566,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
