@@ -173,6 +173,9 @@ function Index() {
       {/* CRISIS REGION ACCESS */}
       <CrisisAccess />
 
+      {/* SOCIAL PROOF */}
+      <Testimonials />
+
       {/* B2B BAND */}
       <section className="relative">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 py-20">
@@ -209,6 +212,9 @@ function Index() {
           </div>
         </div>
       </section>
+
+      {/* FAQ */}
+      <FAQ />
 
       {/* FINAL CTA */}
       <section className="max-w-4xl mx-auto px-5 sm:px-8 py-20 text-center">
