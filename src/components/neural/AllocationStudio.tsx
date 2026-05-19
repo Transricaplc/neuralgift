@@ -131,7 +131,7 @@ export function AllocationStudio({
                     className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
                     style={{ background: `${s.color}1a`, border: `1px solid ${s.color}55` }}
                   >
-                    <ServiceIcon name={s.id} size={20} color={s.color} />
+                    <ServiceIcon id={s.id} size={20} color={s.color} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
@@ -233,7 +233,7 @@ export function AllocationStudio({
                       className="flex items-center justify-between bg-background border border-border rounded-xl px-3 py-2.5"
                     >
                       <div className="flex items-center gap-2.5">
-                        <ServiceIcon name={s.id} size={16} color={s.color} />
+                        <ServiceIcon id={s.id} size={16} color={s.color} />
                         <span className="text-sm font-medium">{s.name}</span>
                       </div>
                       <span className="font-mono text-xs text-gold tabular">
