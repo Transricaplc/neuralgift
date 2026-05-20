@@ -14,6 +14,7 @@ export function Footer() {
           <ul className="space-y-2 text-muted-foreground">
             <li><Link to="/buy" className="hover:text-foreground">Buy a card</Link></li>
             <li><Link to="/pricing" className="hover:text-foreground">Pricing</Link></li>
+            <li><Link to="/orders" className="hover:text-foreground">Track an order</Link></li>
             <li>
               <Link to="/studio" className="hover:text-foreground" title="Preview how to split your card across AI tools.">
                 Allocation studio

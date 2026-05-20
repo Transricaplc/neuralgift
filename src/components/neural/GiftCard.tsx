@@ -6,7 +6,8 @@ export function GiftCard({
   delay = 0,
   rotate = 0,
   float = false,
-}: { amount: number; className?: string; delay?: number; rotate?: number; float?: boolean }) {
+  localLabel,
+}: { amount: number; className?: string; delay?: number; rotate?: number; float?: boolean; localLabel?: string | null }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30, rotate: rotate - 6 }}
@@ -64,6 +65,9 @@ export function GiftCard({
       <div className="absolute bottom-5 right-5 text-right">
         <div className="text-[10px] uppercase tracking-widest text-gold/70 font-display">Value</div>
         <div className="text-4xl font-display font-bold tabular text-gradient-gold leading-none">${amount}</div>
+        {localLabel && (
+          <div className="mt-1 text-[10px] tabular text-foreground/55">≈ {localLabel}</div>
+        )}
       </div>
 
       {/* Tiny code line */}

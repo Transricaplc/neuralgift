@@ -161,7 +161,13 @@ function GlobalAccessPage() {
                 return (
                   <button
                     key={r.code}
-                    onClick={() => setRegion(r.code)}
+                    onClick={() => {
+                      setRegion(r.code);
+                      toast.success(`${r.emoji} ${r.name} set as your region.`, {
+                        description: `Prices will now be shown in ${r.currency}.`,
+                      });
+                    }}
+                    title={`Make ${r.name} your active region — local prices and payment methods will appear across the site.`}
                     className="group bg-surface border border-border rounded-xl p-4 text-left hover:border-indigo/40 transition-colors flex flex-col gap-2"
                     style={{ borderTopColor: s.color, borderTopWidth: 2 }}
                   >
@@ -183,7 +189,7 @@ function GlobalAccessPage() {
                     <div className="flex items-center justify-between text-[10px] uppercase tracking-widest pt-1">
                       <span style={{ color: s.color }}>● {s.label}</span>
                       <span className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center gap-1">
-                        Set <ArrowRight size={10} />
+                        Use this region <ArrowRight size={10} />
                       </span>
                     </div>
                   </button>

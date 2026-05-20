@@ -15,6 +15,8 @@ import { TransparencyStrip } from "@/components/neural/TransparencyStrip";
 import { CrisisAccess } from "@/components/neural/CrisisAccess";
 import { Testimonials } from "@/components/neural/Testimonials";
 import { FAQ } from "@/components/neural/FAQ";
+import { useRegion } from "@/contexts/RegionContext";
+import { formatLocalAmount } from "@/data/regions";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -247,6 +249,9 @@ function Index() {
 
 function CardStack() {
   const ref = useRef<HTMLDivElement>(null);
+  const { region } = useRegion();
+  const showLocal = region.code !== "XX" && region.currency !== "USD";
+  const localFor = (usd: number) => (showLocal ? formatLocalAmount(usd, region) : null);
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const sx = useSpring(mx, { stiffness: 80, damping: 18 });
@@ -274,13 +279,13 @@ function CardStack() {
         style={{ rotateX: rotX, rotateY: rotY, transformStyle: "preserve-3d" }}
       >
         <div className="absolute" style={{ transform: "translate(-90px, 30px)" }}>
-          <GiftCard amount={25} delay={0.2} rotate={-10} float />
+          <GiftCard amount={25} delay={0.2} rotate={-10} float localLabel={localFor(25)} />
         </div>
         <div className="absolute z-10" style={{ transform: "translate(0, -10px) scale(1.05)" }}>
-          <GiftCard amount={50} delay={0.05} rotate={0} float />
+          <GiftCard amount={50} delay={0.05} rotate={0} float localLabel={localFor(50)} />
         </div>
         <div className="absolute" style={{ transform: "translate(90px, 30px)" }}>
-          <GiftCard amount={100} delay={0.35} rotate={10} float />
+          <GiftCard amount={100} delay={0.35} rotate={10} float localLabel={localFor(100)} />
         </div>
       </motion.div>
     </div>
