@@ -271,6 +271,7 @@ export type Database = {
           recipient_email: string | null
           recipient_whatsapp: string | null
           redemption_code: string
+          referral_code: string | null
           status: string
           stripe_session_id: string | null
         }
@@ -297,6 +298,7 @@ export type Database = {
           recipient_email?: string | null
           recipient_whatsapp?: string | null
           redemption_code?: string
+          referral_code?: string | null
           status?: string
           stripe_session_id?: string | null
         }
@@ -323,6 +325,7 @@ export type Database = {
           recipient_email?: string | null
           recipient_whatsapp?: string | null
           redemption_code?: string
+          referral_code?: string | null
           status?: string
           stripe_session_id?: string | null
         }
@@ -460,6 +463,99 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          credit_cents: number
+          discount_cents: number
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_uses: number
+          owner_email: string | null
+          owner_user_id: string | null
+          updated_at: string
+          uses_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          credit_cents?: number
+          discount_cents?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number
+          owner_email?: string | null
+          owner_user_id?: string | null
+          updated_at?: string
+          uses_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          credit_cents?: number
+          discount_cents?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number
+          owner_email?: string | null
+          owner_user_id?: string | null
+          updated_at?: string
+          uses_count?: number
+        }
+        Relationships: []
+      }
+      referral_redemptions: {
+        Row: {
+          buyer_email: string | null
+          code: string
+          created_at: string
+          credit_cents: number
+          discount_cents: number
+          id: string
+          order_id: string | null
+          referral_code_id: string
+        }
+        Insert: {
+          buyer_email?: string | null
+          code: string
+          created_at?: string
+          credit_cents?: number
+          discount_cents?: number
+          id?: string
+          order_id?: string | null
+          referral_code_id: string
+        }
+        Update: {
+          buyer_email?: string | null
+          code?: string
+          created_at?: string
+          credit_cents?: number
+          discount_cents?: number
+          id?: string
+          order_id?: string | null
+          referral_code_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_redemptions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_redemptions_referral_code_id_fkey"
+            columns: ["referral_code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
             referencedColumns: ["id"]
           },
         ]
@@ -613,6 +709,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_referral_to_order: {
+        Args: { _code: string; _order_id: string }
+        Returns: Json
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -657,6 +757,15 @@ export type Database = {
         }[]
       }
       redeem_order: { Args: { _code: string; _services: Json }; Returns: Json }
+      validate_referral_code: {
+        Args: { _code: string }
+        Returns: {
+          credit_cents: number
+          discount_cents: number
+          ok: boolean
+          reason: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
