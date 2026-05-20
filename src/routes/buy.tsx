@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
@@ -11,6 +11,7 @@ import { useRegion } from "@/contexts/RegionContext";
 import { formatLocalAmount } from "@/data/regions";
 import { OccasionPicker, type Occasion } from "@/components/neural/OccasionPicker";
 import { RefreshCw } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/buy")({
   component: BuyPage,
@@ -56,6 +57,11 @@ function BuyPage() {
   const [occasion, setOccasion] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  // Referral
+  const [refCode, setRefCode] = useState<string>(search.ref?.toUpperCase() ?? "");
+  const [refStatus, setRefStatus] = useState<"idle" | "checking" | "valid" | "invalid">("idle");
+  const [refDiscountCents, setRefDiscountCents] = useState<number>(0);
+  const [refReason, setRefReason] = useState<string | null>(null);
   const defaultRail: Rail =
     region.psp === "stripe" ? "card" : region.psp === "crypto" ? "crypto" : "local";
   const [rail, setRail] = useState<Rail>(defaultRail);
@@ -66,7 +72,8 @@ function BuyPage() {
   }
 
   const subtotal = amount * quantity;
-  const total = subtotal + (delivery === "physical" ? 5 : 0);
+  const refDiscount = refStatus === "valid" ? Math.min(refDiscountCents / 100, subtotal) : 0;
+  const total = Math.max(0, subtotal + (delivery === "physical" ? 5 : 0) - refDiscount);
   const showLocal = region.code !== "XX" && region.currency !== "USD";
   const localTotal = showLocal ? formatLocalAmount(total, region) : null;
   const microUsd = region.microBundle?.usd;
