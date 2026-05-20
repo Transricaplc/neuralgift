@@ -375,6 +375,9 @@ function BuyPage() {
               <div className="space-y-2 text-sm">
                 <Row label={`$${amount} card × ${quantity}`} value={`$${subtotal}`} />
                 <Row label="Delivery" value={delivery === "physical" ? "$5" : "Free"} />
+                {refStatus === "valid" && refDiscount > 0 && (
+                  <Row label={`Referral (${refCode})`} value={`−$${refDiscount.toFixed(2)}`} />
+                )}
                 <div className="border-t border-border my-3" />
                 <Row label="Total" value={`$${total}`} bold />
                 {localTotal && (
@@ -383,6 +386,32 @@ function BuyPage() {
                     <span className="tabular">≈ {localTotal}</span>
                   </div>
                 )}
+              </div>
+              {/* Referral code */}
+              <div className="mt-4">
+                <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                  Referral code <span className="text-muted-foreground/60 normal-case">(optional)</span>
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={refCode}
+                    onChange={(e) => setRefCode(e.target.value.toUpperCase().slice(0, 32))}
+                    placeholder="FRIEND10"
+                    className="flex-1 h-9 px-3 rounded-lg bg-background border border-border text-sm font-mono tracking-wider focus:border-indigo focus:outline-none"
+                  />
+                  {refStatus === "checking" && (
+                    <span className="text-[10px] text-muted-foreground">Checking…</span>
+                  )}
+                  {refStatus === "valid" && (
+                    <span className="text-[10px] text-success-green">✓ −${(refDiscountCents / 100).toFixed(2)}</span>
+                  )}
+                  {refStatus === "invalid" && (
+                    <span className="text-[10px] text-amber">
+                      {refReason === "expired" ? "Expired" : refReason === "max_uses_reached" ? "Used up" : "Invalid"}
+                    </span>
+                  )}
+                </div>
               </div>
               {showLocal && (
                 <div className="mt-4 rounded-lg border border-border bg-background/60 p-3 text-[11px] text-muted-foreground">
