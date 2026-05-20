@@ -19,6 +19,7 @@ import { Route as RefundsRouteImport } from './routes/refunds'
 import { Route as RedeemRouteImport } from './routes/redeem'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as ManifestoRouteImport } from './routes/manifesto'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as GlobalAccessRouteImport } from './routes/global-access'
@@ -36,6 +37,7 @@ import { Route as BuyReturnRouteImport } from './routes/buy.return'
 import { Route as BusinessLandingRouteImport } from './routes/business.landing'
 import { Route as AdminCoverageRouteImport } from './routes/admin.coverage'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as GiftTrackOrderIdRouteImport } from './routes/gift.track.$orderId'
 import { Route as ApiPublicSubmitLeadRouteImport } from './routes/api/public/submit-lead'
 import { Route as ApiPublicSendEmailRouteImport } from './routes/api/public/send-email'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -91,6 +93,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ManifestoRoute = ManifestoRouteImport.update({
@@ -178,6 +185,11 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   path: '/lovable/email/suppression',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GiftTrackOrderIdRoute = GiftTrackOrderIdRouteImport.update({
+  id: '/gift/track/$orderId',
+  path: '/gift/track/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSubmitLeadRoute = ApiPublicSubmitLeadRouteImport.update({
   id: '/api/public/submit-lead',
   path: '/api/public/submit-lead',
@@ -223,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
   '/manifesto': typeof ManifestoRoute
+  '/orders': typeof OrdersRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/redeem': typeof RedeemRoute
@@ -242,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/pay/local': typeof PayLocalRoute
   '/api/public/send-email': typeof ApiPublicSendEmailRoute
   '/api/public/submit-lead': typeof ApiPublicSubmitLeadRoute
+  '/gift/track/$orderId': typeof GiftTrackOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -258,6 +272,7 @@ export interface FileRoutesByTo {
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
   '/manifesto': typeof ManifestoRoute
+  '/orders': typeof OrdersRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/redeem': typeof RedeemRoute
@@ -277,6 +292,7 @@ export interface FileRoutesByTo {
   '/pay/local': typeof PayLocalRoute
   '/api/public/send-email': typeof ApiPublicSendEmailRoute
   '/api/public/submit-lead': typeof ApiPublicSubmitLeadRoute
+  '/gift/track/$orderId': typeof GiftTrackOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -294,6 +310,7 @@ export interface FileRoutesById {
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
   '/manifesto': typeof ManifestoRoute
+  '/orders': typeof OrdersRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/redeem': typeof RedeemRoute
@@ -313,6 +330,7 @@ export interface FileRoutesById {
   '/pay/local': typeof PayLocalRoute
   '/api/public/send-email': typeof ApiPublicSendEmailRoute
   '/api/public/submit-lead': typeof ApiPublicSubmitLeadRoute
+  '/gift/track/$orderId': typeof GiftTrackOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -331,6 +349,7 @@ export interface FileRouteTypes {
     | '/global-access'
     | '/how-it-works'
     | '/manifesto'
+    | '/orders'
     | '/pricing'
     | '/privacy'
     | '/redeem'
@@ -350,6 +369,7 @@ export interface FileRouteTypes {
     | '/pay/local'
     | '/api/public/send-email'
     | '/api/public/submit-lead'
+    | '/gift/track/$orderId'
     | '/lovable/email/suppression'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
@@ -366,6 +386,7 @@ export interface FileRouteTypes {
     | '/global-access'
     | '/how-it-works'
     | '/manifesto'
+    | '/orders'
     | '/pricing'
     | '/privacy'
     | '/redeem'
@@ -385,6 +406,7 @@ export interface FileRouteTypes {
     | '/pay/local'
     | '/api/public/send-email'
     | '/api/public/submit-lead'
+    | '/gift/track/$orderId'
     | '/lovable/email/suppression'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
@@ -401,6 +423,7 @@ export interface FileRouteTypes {
     | '/global-access'
     | '/how-it-works'
     | '/manifesto'
+    | '/orders'
     | '/pricing'
     | '/privacy'
     | '/redeem'
@@ -420,6 +443,7 @@ export interface FileRouteTypes {
     | '/pay/local'
     | '/api/public/send-email'
     | '/api/public/submit-lead'
+    | '/gift/track/$orderId'
     | '/lovable/email/suppression'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
@@ -437,6 +461,7 @@ export interface RootRouteChildren {
   GlobalAccessRoute: typeof GlobalAccessRoute
   HowItWorksRoute: typeof HowItWorksRoute
   ManifestoRoute: typeof ManifestoRoute
+  OrdersRoute: typeof OrdersRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   RedeemRoute: typeof RedeemRoute
@@ -453,6 +478,7 @@ export interface RootRouteChildren {
   PayLocalRoute: typeof PayLocalRoute
   ApiPublicSendEmailRoute: typeof ApiPublicSendEmailRoute
   ApiPublicSubmitLeadRoute: typeof ApiPublicSubmitLeadRoute
+  GiftTrackOrderIdRoute: typeof GiftTrackOrderIdRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -530,6 +556,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/manifesto': {
@@ -651,6 +684,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailSuppressionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/gift/track/$orderId': {
+      id: '/gift/track/$orderId'
+      path: '/gift/track/$orderId'
+      fullPath: '/gift/track/$orderId'
+      preLoaderRoute: typeof GiftTrackOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/submit-lead': {
       id: '/api/public/submit-lead'
       path: '/api/public/submit-lead'
@@ -730,6 +770,7 @@ const rootRouteChildren: RootRouteChildren = {
   GlobalAccessRoute: GlobalAccessRoute,
   HowItWorksRoute: HowItWorksRoute,
   ManifestoRoute: ManifestoRoute,
+  OrdersRoute: OrdersRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   RedeemRoute: RedeemRoute,
@@ -746,6 +787,7 @@ const rootRouteChildren: RootRouteChildren = {
   PayLocalRoute: PayLocalRoute,
   ApiPublicSendEmailRoute: ApiPublicSendEmailRoute,
   ApiPublicSubmitLeadRoute: ApiPublicSubmitLeadRoute,
+  GiftTrackOrderIdRoute: GiftTrackOrderIdRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
