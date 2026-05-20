@@ -144,8 +144,12 @@ function RedeemPage() {
         <AnimatePresence mode="wait">
           {step === 1 && (
             <motion.div key="s1" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 text-[11px] font-medium px-3 py-1 rounded-full border border-indigo/40 text-indigo/90 mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo" /> Step 1 of 3 — Unlock your card
+              </div>
               <h1 className="font-display text-4xl sm:text-5xl font-bold">Enter your code.</h1>
-              <p className="mt-3 text-muted-foreground">Paste the redemption code from your card or email.</p>
+              <p className="mt-3 text-muted-foreground">32-character code from your gift email, WhatsApp, or physical card.</p>
+              <p className="mt-1 text-[11px] text-muted-foreground/70 tabular">Format: XXXXXXXX – XXXX – XXXX – XXXX – XXXXXXXXXXXX</p>
               <div className="mt-8 bg-surface border border-border rounded-2xl p-6">
                 <CodeInput value={code} onChange={setCode} onSubmit={() => checkBalance(code)} />
                 {error && <div className="mt-4 text-sm text-amber bg-amber/10 border border-amber/30 rounded-lg p-3">{error}</div>}
@@ -157,7 +161,19 @@ function RedeemPage() {
                 >
                   {loading ? "Checking…" : "Check balance"}
                 </button>
+                <div className="mt-4 flex items-center justify-center gap-2 text-[11px] text-muted-foreground">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-background border border-border">🔒 Secure check</span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-background border border-border">⚡ Instant</span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-background border border-border">♾ No expiry</span>
+                </div>
+                <p className="mt-4 text-[11px] text-muted-foreground">
+                  No code? <a href="mailto:support@neuralgift.app" className="text-indigo hover:underline">Contact support</a>
+                </p>
               </div>
+              <p className="mt-6 text-xs text-muted-foreground max-w-md mx-auto">
+                After entering your code, you'll see your balance and a full menu of AI tools — ChatGPT, Claude, Midjourney, and more.
+                Pick what you want. We provision a single-use virtual card per service.
+              </p>
             </motion.div>
           )}
 
