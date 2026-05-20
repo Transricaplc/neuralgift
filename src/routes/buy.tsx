@@ -91,6 +91,39 @@ function BuyPage() {
     if (!message.trim() || message.length < 4) setMessage(o.message);
   }
 
+  // Validate referral code (debounced)
+  useEffect(() => {
+    const code = refCode.trim().toUpperCase();
+    if (!code) {
+      setRefStatus("idle");
+      setRefDiscountCents(0);
+      setRefReason(null);
+      return;
+    }
+    setRefStatus("checking");
+    const t = setTimeout(async () => {
+      const { data, error } = await supabase.rpc("validate_referral_code", { _code: code });
+      const row = Array.isArray(data) ? data[0] : data;
+      if (error || !row) {
+        setRefStatus("invalid");
+        setRefDiscountCents(0);
+        setRefReason("error");
+        return;
+      }
+      if (row.ok) {
+        setRefStatus("valid");
+        setRefDiscountCents(row.discount_cents ?? 0);
+        setRefReason(null);
+        void track("referral_code_applied", { code, discount_cents: row.discount_cents });
+      } else {
+        setRefStatus("invalid");
+        setRefDiscountCents(0);
+        setRefReason(row.reason ?? "invalid");
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, [refCode]);
+
   function handleCheckout() {
     setError(null);
     if (!buyerEmail.includes("@")) {
