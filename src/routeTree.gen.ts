@@ -17,6 +17,7 @@ import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RedeemRouteImport } from './routes/redeem'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ManifestoRouteImport } from './routes/manifesto'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as GlobalAccessRouteImport } from './routes/global-access'
 import { Route as ClaimRouteImport } from './routes/claim'
@@ -77,6 +78,11 @@ const PricingRoute = PricingRouteImport.update({
 const ManifestoRoute = ManifestoRouteImport.update({
   id: '/manifesto',
   path: '/manifesto',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HowItWorksRoute = HowItWorksRouteImport.update({
@@ -197,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/claim': typeof ClaimRoute
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/legal': typeof LegalRoute
   '/manifesto': typeof ManifestoRoute
   '/pricing': typeof PricingRoute
   '/redeem': typeof RedeemRoute
@@ -228,6 +235,7 @@ export interface FileRoutesByTo {
   '/claim': typeof ClaimRoute
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/legal': typeof LegalRoute
   '/manifesto': typeof ManifestoRoute
   '/pricing': typeof PricingRoute
   '/redeem': typeof RedeemRoute
@@ -260,6 +268,7 @@ export interface FileRoutesById {
   '/claim': typeof ClaimRoute
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/legal': typeof LegalRoute
   '/manifesto': typeof ManifestoRoute
   '/pricing': typeof PricingRoute
   '/redeem': typeof RedeemRoute
@@ -293,6 +302,7 @@ export interface FileRouteTypes {
     | '/claim'
     | '/global-access'
     | '/how-it-works'
+    | '/legal'
     | '/manifesto'
     | '/pricing'
     | '/redeem'
@@ -324,6 +334,7 @@ export interface FileRouteTypes {
     | '/claim'
     | '/global-access'
     | '/how-it-works'
+    | '/legal'
     | '/manifesto'
     | '/pricing'
     | '/redeem'
@@ -355,6 +366,7 @@ export interface FileRouteTypes {
     | '/claim'
     | '/global-access'
     | '/how-it-works'
+    | '/legal'
     | '/manifesto'
     | '/pricing'
     | '/redeem'
@@ -387,6 +399,7 @@ export interface RootRouteChildren {
   ClaimRoute: typeof ClaimRoute
   GlobalAccessRoute: typeof GlobalAccessRoute
   HowItWorksRoute: typeof HowItWorksRoute
+  LegalRoute: typeof LegalRoute
   ManifestoRoute: typeof ManifestoRoute
   PricingRoute: typeof PricingRoute
   RedeemRoute: typeof RedeemRoute
@@ -464,6 +477,13 @@ declare module '@tanstack/react-router' {
       path: '/manifesto'
       fullPath: '/manifesto'
       preLoaderRoute: typeof ManifestoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/how-it-works': {
@@ -648,6 +668,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClaimRoute: ClaimRoute,
   GlobalAccessRoute: GlobalAccessRoute,
   HowItWorksRoute: HowItWorksRoute,
+  LegalRoute: LegalRoute,
   ManifestoRoute: ManifestoRoute,
   PricingRoute: PricingRoute,
   RedeemRoute: RedeemRoute,
