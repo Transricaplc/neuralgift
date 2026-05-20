@@ -496,6 +496,7 @@ function BuyPage() {
                 recipientName={recipientName || undefined}
                 message={message || undefined}
                 deliveryType={delivery}
+                referralCode={refStatus === "valid" ? refCode : undefined}
                 returnUrl={`${window.location.origin}/buy/return?session_id={CHECKOUT_SESSION_ID}`}
               />
             </div>
