@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ViewportRouteImport } from './routes/viewport'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -38,6 +39,11 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
+const ViewportRoute = ViewportRouteImport.update({
+  id: '/viewport',
+  path: '/viewport',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
   path: '/unsubscribe',
@@ -198,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/studio': typeof StudioRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/viewport': typeof ViewportRoute
   '/admin/coverage': typeof AdminCoverageRoute
   '/business/landing': typeof BusinessLandingRoute
   '/buy/return': typeof BuyReturnRoute
@@ -228,6 +235,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/studio': typeof StudioRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/viewport': typeof ViewportRoute
   '/admin/coverage': typeof AdminCoverageRoute
   '/business/landing': typeof BusinessLandingRoute
   '/buy/return': typeof BuyReturnRoute
@@ -259,6 +267,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/studio': typeof StudioRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/viewport': typeof ViewportRoute
   '/admin/coverage': typeof AdminCoverageRoute
   '/business/landing': typeof BusinessLandingRoute
   '/buy/return': typeof BuyReturnRoute
@@ -291,6 +300,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/studio'
     | '/unsubscribe'
+    | '/viewport'
     | '/admin/coverage'
     | '/business/landing'
     | '/buy/return'
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/studio'
     | '/unsubscribe'
+    | '/viewport'
     | '/admin/coverage'
     | '/business/landing'
     | '/buy/return'
@@ -351,6 +362,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/studio'
     | '/unsubscribe'
+    | '/viewport'
     | '/admin/coverage'
     | '/business/landing'
     | '/buy/return'
@@ -382,6 +394,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StudioRoute: typeof StudioRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
+  ViewportRoute: typeof ViewportRoute
   AdminCoverageRoute: typeof AdminCoverageRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   PayCryptoRoute: typeof PayCryptoRoute
@@ -397,6 +410,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/viewport': {
+      id: '/viewport'
+      path: '/viewport'
+      fullPath: '/viewport'
+      preLoaderRoute: typeof ViewportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/unsubscribe': {
       id: '/unsubscribe'
       path: '/unsubscribe'
@@ -635,6 +655,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StudioRoute: StudioRoute,
   UnsubscribeRoute: UnsubscribeRoute,
+  ViewportRoute: ViewportRoute,
   AdminCoverageRoute: AdminCoverageRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   PayCryptoRoute: PayCryptoRoute,
