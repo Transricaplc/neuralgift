@@ -11,14 +11,18 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ViewportRouteImport } from './routes/viewport'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as RefundsRouteImport } from './routes/refunds'
 import { Route as RedeemRouteImport } from './routes/redeem'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ManifestoRouteImport } from './routes/manifesto'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as GlobalAccessRouteImport } from './routes/global-access'
+import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as ClaimRouteImport } from './routes/claim'
 import { Route as BuyRouteImport } from './routes/buy'
 import { Route as BusinessRouteImport } from './routes/business'
@@ -49,6 +53,11 @@ const UnsubscribeRoute = UnsubscribeRouteImport.update({
   path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
@@ -64,9 +73,19 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RefundsRoute = RefundsRouteImport.update({
+  id: '/refunds',
+  path: '/refunds',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RedeemRoute = RedeemRouteImport.update({
   id: '/redeem',
   path: '/redeem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PricingRoute = PricingRouteImport.update({
@@ -87,6 +106,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
 const GlobalAccessRoute = GlobalAccessRouteImport.update({
   id: '/global-access',
   path: '/global-access',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClaimRoute = ClaimRouteImport.update({
@@ -195,14 +219,18 @@ export interface FileRoutesByFullPath {
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
   '/claim': typeof ClaimRoute
+  '/cookies': typeof CookiesRoute
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
   '/manifesto': typeof ManifestoRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/redeem': typeof RedeemRoute
+  '/refunds': typeof RefundsRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/studio': typeof StudioRoute
+  '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/viewport': typeof ViewportRoute
   '/admin/coverage': typeof AdminCoverageRoute
@@ -226,14 +254,18 @@ export interface FileRoutesByTo {
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
   '/claim': typeof ClaimRoute
+  '/cookies': typeof CookiesRoute
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
   '/manifesto': typeof ManifestoRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/redeem': typeof RedeemRoute
+  '/refunds': typeof RefundsRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/studio': typeof StudioRoute
+  '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/viewport': typeof ViewportRoute
   '/admin/coverage': typeof AdminCoverageRoute
@@ -258,14 +290,18 @@ export interface FileRoutesById {
   '/business': typeof BusinessRouteWithChildren
   '/buy': typeof BuyRouteWithChildren
   '/claim': typeof ClaimRoute
+  '/cookies': typeof CookiesRoute
   '/global-access': typeof GlobalAccessRoute
   '/how-it-works': typeof HowItWorksRoute
   '/manifesto': typeof ManifestoRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/redeem': typeof RedeemRoute
+  '/refunds': typeof RefundsRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/studio': typeof StudioRoute
+  '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/viewport': typeof ViewportRoute
   '/admin/coverage': typeof AdminCoverageRoute
@@ -291,14 +327,18 @@ export interface FileRouteTypes {
     | '/business'
     | '/buy'
     | '/claim'
+    | '/cookies'
     | '/global-access'
     | '/how-it-works'
     | '/manifesto'
     | '/pricing'
+    | '/privacy'
     | '/redeem'
+    | '/refunds'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/studio'
+    | '/terms'
     | '/unsubscribe'
     | '/viewport'
     | '/admin/coverage'
@@ -322,14 +362,18 @@ export interface FileRouteTypes {
     | '/business'
     | '/buy'
     | '/claim'
+    | '/cookies'
     | '/global-access'
     | '/how-it-works'
     | '/manifesto'
     | '/pricing'
+    | '/privacy'
     | '/redeem'
+    | '/refunds'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/studio'
+    | '/terms'
     | '/unsubscribe'
     | '/viewport'
     | '/admin/coverage'
@@ -353,14 +397,18 @@ export interface FileRouteTypes {
     | '/business'
     | '/buy'
     | '/claim'
+    | '/cookies'
     | '/global-access'
     | '/how-it-works'
     | '/manifesto'
     | '/pricing'
+    | '/privacy'
     | '/redeem'
+    | '/refunds'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/studio'
+    | '/terms'
     | '/unsubscribe'
     | '/viewport'
     | '/admin/coverage'
@@ -385,14 +433,18 @@ export interface RootRouteChildren {
   BusinessRoute: typeof BusinessRouteWithChildren
   BuyRoute: typeof BuyRouteWithChildren
   ClaimRoute: typeof ClaimRoute
+  CookiesRoute: typeof CookiesRoute
   GlobalAccessRoute: typeof GlobalAccessRoute
   HowItWorksRoute: typeof HowItWorksRoute
   ManifestoRoute: typeof ManifestoRoute
   PricingRoute: typeof PricingRoute
+  PrivacyRoute: typeof PrivacyRoute
   RedeemRoute: typeof RedeemRoute
+  RefundsRoute: typeof RefundsRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StudioRoute: typeof StudioRoute
+  TermsRoute: typeof TermsRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   ViewportRoute: typeof ViewportRoute
   AdminCoverageRoute: typeof AdminCoverageRoute
@@ -424,6 +476,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/studio': {
       id: '/studio'
       path: '/studio'
@@ -445,11 +504,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/refunds': {
+      id: '/refunds'
+      path: '/refunds'
+      fullPath: '/refunds'
+      preLoaderRoute: typeof RefundsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/redeem': {
       id: '/redeem'
       path: '/redeem'
       fullPath: '/redeem'
       preLoaderRoute: typeof RedeemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pricing': {
@@ -478,6 +551,13 @@ declare module '@tanstack/react-router' {
       path: '/global-access'
       fullPath: '/global-access'
       preLoaderRoute: typeof GlobalAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/claim': {
@@ -646,14 +726,18 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessRoute: BusinessRouteWithChildren,
   BuyRoute: BuyRouteWithChildren,
   ClaimRoute: ClaimRoute,
+  CookiesRoute: CookiesRoute,
   GlobalAccessRoute: GlobalAccessRoute,
   HowItWorksRoute: HowItWorksRoute,
   ManifestoRoute: ManifestoRoute,
   PricingRoute: PricingRoute,
+  PrivacyRoute: PrivacyRoute,
   RedeemRoute: RedeemRoute,
+  RefundsRoute: RefundsRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StudioRoute: StudioRoute,
+  TermsRoute: TermsRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   ViewportRoute: ViewportRoute,
   AdminCoverageRoute: AdminCoverageRoute,

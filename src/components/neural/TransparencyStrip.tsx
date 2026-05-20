@@ -1,8 +1,12 @@
+import { REGIONS } from "@/data/regions";
+
+const COUNTRY_COUNT = REGIONS.filter((r) => r.code !== "XX").length;
+
 const STATS = [
   { value: "3.5%", label: "Flat commission", note: "Same fee whether you pay in USD or USDT." },
   { value: "0", label: "Subscriptions", note: "No auto-renew. No trial traps." },
   { value: "∞", label: "No expiry", note: "Balance never disappears on you." },
-  { value: "80+", label: "Countries", note: "And every country via crypto fallback." },
+  { value: `${COUNTRY_COUNT}+`, label: "Countries", note: "And every country via crypto fallback." },
 ];
 
 export function TransparencyStrip() {

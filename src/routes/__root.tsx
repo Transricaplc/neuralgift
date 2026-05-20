@@ -61,7 +61,7 @@ export const Route = createRootRoute({
       { property: "og:title", content: "NeuralGift — One card. Every AI tool." },
       { property: "og:description", content: "Gift the future of thinking. A universal AI gift card redeemable across ChatGPT, Claude, Midjourney and more." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@NeuralGift" },
       { name: "twitter:title", content: "NeuralGift — One card. Every AI tool." },
       { name: "twitter:description", content: "Gift the future of thinking. A universal AI gift card redeemable across ChatGPT, Claude, Midjourney and more." },

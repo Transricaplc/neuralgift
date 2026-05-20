@@ -47,9 +47,9 @@ function Index() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full border border-gold/30 text-gold/90 mb-6"
+              className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full border border-crypto-teal/40 text-crypto-teal mb-6"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-gold" /> Now in early access
+              <span className="w-1.5 h-1.5 rounded-full bg-crypto-teal" /> Now available in 80+ countries
             </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 16 }}

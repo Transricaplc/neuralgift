@@ -13,7 +13,10 @@ export const Route = createFileRoute("/manifesto")({
       { name: "description", content: "Why NeuralGift exists: the global payment system left billions of builders behind. We're the gift card that works in every country, on every AI tool." },
       { property: "og:title", content: "NeuralGift Manifesto" },
       { property: "og:description", content: "The AI revolution shouldn't have a passport check at the door." },
+      { property: "og:url", content: "https://neuralgift.app/manifesto" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://neuralgift.app/manifesto" }],
   }),
 });
 
