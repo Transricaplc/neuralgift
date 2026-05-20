@@ -36,6 +36,10 @@
   --color-indigo: var(--indigo);
   --color-indigo-foreground: var(--indigo-foreground);
   --color-amber: var(--amber);
+  --color-crypto-teal: var(--crypto-teal);
+  --color-success-green: var(--success-green);
+  --color-conflict-amber: var(--conflict-amber);
+  --color-world-blue: var(--world-blue);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
