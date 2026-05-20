@@ -10,6 +10,7 @@ import { track } from "@/lib/analytics";
 import { useRegion } from "@/contexts/RegionContext";
 import { formatLocalAmount } from "@/data/regions";
 import { OccasionPicker, type Occasion } from "@/components/neural/OccasionPicker";
+import { RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/buy")({
   component: BuyPage,
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/buy")({
 const DENOMS = [25, 50, 100] as const;
 
 type Rail = "card" | "local" | "crypto";
+type DeliveryMethod = "email" | "whatsapp" | "sms" | "print";
 
 function BuyPage() {
   const navigate = useNavigate();
@@ -44,6 +46,8 @@ function BuyPage() {
   const initialAmount = search.amount && search.amount >= 5 ? Math.min(500, Math.round(search.amount)) : 50;
   const [amount, setAmount] = useState<number>(initialAmount);
   const [delivery, setDelivery] = useState<"digital" | "physical">("digital");
+  const [giftMethod, setGiftMethod] = useState<DeliveryMethod>("email");
+  const [recipientPhone, setRecipientPhone] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [recipientName, setRecipientName] = useState("");
   const [recipientEmail, setRecipientEmail] = useState("");
@@ -63,7 +67,13 @@ function BuyPage() {
 
   const subtotal = amount * quantity;
   const total = subtotal + (delivery === "physical" ? 5 : 0);
-  const localTotal = region.code === "XX" ? null : formatLocalAmount(total, region);
+  const showLocal = region.code !== "XX" && region.currency !== "USD";
+  const localTotal = showLocal ? formatLocalAmount(total, region) : null;
+  const microUsd = region.microBundle?.usd;
+  const localMethods = region.methods.filter(
+    (m) => !/^card/i.test(m) && !/USDT|USDC|crypto/i.test(m),
+  ).slice(0, 4);
+  const cryptoMethods = region.methods.filter((m) => /USDT|USDC/i.test(m)).slice(0, 2);
 
   function pickOccasion(o: Occasion) {
     setOccasion(o.id);
