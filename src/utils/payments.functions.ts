@@ -29,6 +29,7 @@ export const createGiftCardCheckout = createServerFn({ method: 'POST' })
     customerCountry?: string;
     returnUrl: string;
     environment: StripeEnv;
+    referralCode?: string;
   }) => {
     if (!Number.isInteger(data.amountInCents) || data.amountInCents < 500 || data.amountInCents > 1_000_000) {
       throw new Error('Amount must be between $5 and $10,000');
@@ -38,11 +39,28 @@ export const createGiftCardCheckout = createServerFn({ method: 'POST' })
     }
     if (!data.buyerEmail.includes('@')) throw new Error('Invalid buyer email');
     if (data.deliveryType !== 'digital' && data.deliveryType !== 'physical') throw new Error('Invalid delivery type');
+    if (data.referralCode !== undefined) {
+      const c = data.referralCode.trim().toUpperCase();
+      if (c && !/^[A-Z0-9_-]{4,32}$/.test(c)) throw new Error('Invalid referral code format');
+      data.referralCode = c || undefined;
+    }
     return data;
   })
   .handler(async ({ data }) => {
     const stripe = createStripeClient(data.environment);
     const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+
+    // Validate referral code server-side (defense in depth)
+    let referralDiscountCents = 0;
+    let referralCodeValid: string | null = null;
+    if (data.referralCode) {
+      const { data: vRows } = await supabase.rpc('validate_referral_code', { _code: data.referralCode });
+      const v = Array.isArray(vRows) ? vRows[0] : vRows;
+      if (v?.ok) {
+        referralDiscountCents = Math.min(v.discount_cents ?? 0, data.amountInCents * data.quantity);
+        referralCodeValid = data.referralCode;
+      }
+    }
 
     // Create pending order first so we have the redemption code
     const { data: order, error } = await supabase
@@ -56,6 +74,7 @@ export const createGiftCardCheckout = createServerFn({ method: 'POST' })
         message: data.message || null,
         status: 'pending',
         currency: 'usd',
+        referral_code: referralCodeValid,
       })
       .select('id, redemption_code')
       .single();
@@ -84,6 +103,22 @@ export const createGiftCardCheckout = createServerFn({ method: 'POST' })
       });
     }
 
+    // Apply referral discount as a Stripe coupon (one-off, session-scoped)
+    let discounts: any[] | undefined;
+    if (referralDiscountCents > 0 && referralCodeValid) {
+      try {
+        const coupon = await stripe.coupons.create({
+          amount_off: referralDiscountCents,
+          currency: 'usd',
+          duration: 'once',
+          name: `Referral ${referralCodeValid}`,
+        });
+        discounts = [{ coupon: coupon.id }];
+      } catch {
+        // If coupon creation fails, fall back to no discount; order still records the code.
+      }
+    }
+
     const useManaged = shouldUseManaged(data.customerCountry);
 
     const session = await stripe.checkout.sessions.create({
@@ -92,15 +127,19 @@ export const createGiftCardCheckout = createServerFn({ method: 'POST' })
       ui_mode: 'embedded_page',
       return_url: data.returnUrl,
       customer_email: data.buyerEmail,
+      ...(discounts ? { discounts } : {}),
       metadata: {
         order_id: order.id,
         redemption_code: order.redemption_code,
         managed_payments: useManaged ? 'true' : 'false',
         customer_country: data.customerCountry || '',
+        referral_code: referralCodeValid || '',
       },
       ...(useManaged
         ? { managed_payments: { enabled: true } }
-        : { automatic_tax: { enabled: true } }),
+        : discounts
+          ? {} // automatic_tax + discounts can conflict; skip auto-tax when discount applied
+          : { automatic_tax: { enabled: true } }),
     });
 
     // Save session id on order so webhook can match

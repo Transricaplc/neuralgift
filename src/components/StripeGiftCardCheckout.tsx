@@ -13,6 +13,7 @@ interface Props {
   message?: string;
   deliveryType: 'digital' | 'physical';
   returnUrl: string;
+  referralCode?: string;
 }
 
 export function StripeGiftCardCheckout(props: Props) {

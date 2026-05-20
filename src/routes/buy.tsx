@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
@@ -11,6 +11,7 @@ import { useRegion } from "@/contexts/RegionContext";
 import { formatLocalAmount } from "@/data/regions";
 import { OccasionPicker, type Occasion } from "@/components/neural/OccasionPicker";
 import { RefreshCw } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/buy")({
   component: BuyPage,
@@ -56,6 +57,11 @@ function BuyPage() {
   const [occasion, setOccasion] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  // Referral
+  const [refCode, setRefCode] = useState<string>(search.ref?.toUpperCase() ?? "");
+  const [refStatus, setRefStatus] = useState<"idle" | "checking" | "valid" | "invalid">("idle");
+  const [refDiscountCents, setRefDiscountCents] = useState<number>(0);
+  const [refReason, setRefReason] = useState<string | null>(null);
   const defaultRail: Rail =
     region.psp === "stripe" ? "card" : region.psp === "crypto" ? "crypto" : "local";
   const [rail, setRail] = useState<Rail>(defaultRail);
@@ -66,7 +72,8 @@ function BuyPage() {
   }
 
   const subtotal = amount * quantity;
-  const total = subtotal + (delivery === "physical" ? 5 : 0);
+  const refDiscount = refStatus === "valid" ? Math.min(refDiscountCents / 100, subtotal) : 0;
+  const total = Math.max(0, subtotal + (delivery === "physical" ? 5 : 0) - refDiscount);
   const showLocal = region.code !== "XX" && region.currency !== "USD";
   const localTotal = showLocal ? formatLocalAmount(total, region) : null;
   const microUsd = region.microBundle?.usd;
@@ -83,6 +90,39 @@ function BuyPage() {
     // Only overwrite message if the buyer hasn't written something custom yet
     if (!message.trim() || message.length < 4) setMessage(o.message);
   }
+
+  // Validate referral code (debounced)
+  useEffect(() => {
+    const code = refCode.trim().toUpperCase();
+    if (!code) {
+      setRefStatus("idle");
+      setRefDiscountCents(0);
+      setRefReason(null);
+      return;
+    }
+    setRefStatus("checking");
+    const t = setTimeout(async () => {
+      const { data, error } = await supabase.rpc("validate_referral_code", { _code: code });
+      const row = Array.isArray(data) ? data[0] : data;
+      if (error || !row) {
+        setRefStatus("invalid");
+        setRefDiscountCents(0);
+        setRefReason("error");
+        return;
+      }
+      if (row.ok) {
+        setRefStatus("valid");
+        setRefDiscountCents(row.discount_cents ?? 0);
+        setRefReason(null);
+        void track("referral_code_applied", { code, discount_cents: row.discount_cents });
+      } else {
+        setRefStatus("invalid");
+        setRefDiscountCents(0);
+        setRefReason(row.reason ?? "invalid");
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, [refCode]);
 
   function handleCheckout() {
     setError(null);
@@ -335,6 +375,9 @@ function BuyPage() {
               <div className="space-y-2 text-sm">
                 <Row label={`$${amount} card × ${quantity}`} value={`$${subtotal}`} />
                 <Row label="Delivery" value={delivery === "physical" ? "$5" : "Free"} />
+                {refStatus === "valid" && refDiscount > 0 && (
+                  <Row label={`Referral (${refCode})`} value={`−$${refDiscount.toFixed(2)}`} />
+                )}
                 <div className="border-t border-border my-3" />
                 <Row label="Total" value={`$${total}`} bold />
                 {localTotal && (
@@ -343,6 +386,32 @@ function BuyPage() {
                     <span className="tabular">≈ {localTotal}</span>
                   </div>
                 )}
+              </div>
+              {/* Referral code */}
+              <div className="mt-4">
+                <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                  Referral code <span className="text-muted-foreground/60 normal-case">(optional)</span>
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={refCode}
+                    onChange={(e) => setRefCode(e.target.value.toUpperCase().slice(0, 32))}
+                    placeholder="FRIEND10"
+                    className="flex-1 h-9 px-3 rounded-lg bg-background border border-border text-sm font-mono tracking-wider focus:border-indigo focus:outline-none"
+                  />
+                  {refStatus === "checking" && (
+                    <span className="text-[10px] text-muted-foreground">Checking…</span>
+                  )}
+                  {refStatus === "valid" && (
+                    <span className="text-[10px] text-success-green">✓ −${(refDiscountCents / 100).toFixed(2)}</span>
+                  )}
+                  {refStatus === "invalid" && (
+                    <span className="text-[10px] text-amber">
+                      {refReason === "expired" ? "Expired" : refReason === "max_uses_reached" ? "Used up" : "Invalid"}
+                    </span>
+                  )}
+                </div>
               </div>
               {showLocal && (
                 <div className="mt-4 rounded-lg border border-border bg-background/60 p-3 text-[11px] text-muted-foreground">
@@ -427,6 +496,7 @@ function BuyPage() {
                 recipientName={recipientName || undefined}
                 message={message || undefined}
                 deliveryType={delivery}
+                referralCode={refStatus === "valid" ? refCode : undefined}
                 returnUrl={`${window.location.origin}/buy/return?session_id={CHECKOUT_SESSION_ID}`}
               />
             </div>
