@@ -128,8 +128,31 @@ function BuyPage() {
             </Section>
 
             {/* Denomination */}
-            <Section title="Denomination">
-              <div className="grid grid-cols-3 gap-3">
+            <Section title="Denomination" hint={showLocal ? `Shown in ${region.currency} for ${region.name}` : undefined}>
+              <div className={`grid gap-3 ${microUsd ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"}`}>
+                {microUsd && (
+                  <button
+                    type="button"
+                    onClick={() => setAmount(Math.max(2, Math.round(microUsd)))}
+                    className={`relative rounded-2xl border p-5 text-left transition-all ${
+                      amount === Math.max(2, Math.round(microUsd))
+                        ? "border-gold/60 bg-gold/5 -translate-y-1"
+                        : "border-border bg-surface hover:border-indigo/40 hover:-translate-y-0.5"
+                    }`}
+                  >
+                    <div className="absolute top-3 right-3 text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded-full bg-gold/15 text-gold font-semibold">
+                      Starter
+                    </div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-widest">Micro</div>
+                    <div className="text-2xl font-display font-bold tabular mt-1">
+                      {region.microBundle?.label}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground tabular mt-0.5">≈ ${microUsd.toFixed(2)} USD</div>
+                    <div className="text-[11px] text-muted-foreground mt-2 leading-snug">
+                      A few hours of Claude. Less than a coffee.
+                    </div>
+                  </button>
+                )}
                 {DENOMS.map((d) => (
                   <button
                     key={d}
@@ -142,7 +165,16 @@ function BuyPage() {
                     }`}
                   >
                     <div className="text-xs text-muted-foreground uppercase tracking-widest">Card</div>
-                    <div className="text-3xl font-display font-bold tabular mt-1">${d}</div>
+                    {showLocal ? (
+                      <>
+                        <div className="text-2xl font-display font-bold tabular mt-1 leading-tight">
+                          {formatLocalAmount(d, region)}
+                        </div>
+                        <div className="text-[11px] text-muted-foreground tabular mt-0.5">≈ ${d} USD</div>
+                      </>
+                    ) : (
+                      <div className="text-3xl font-display font-bold tabular mt-1">${d}</div>
+                    )}
                     {amount === d && (
                       <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-gold" />
                     )}
@@ -200,6 +232,42 @@ function BuyPage() {
                 <Input label="Recipient name" value={recipientName} onChange={setRecipientName} placeholder="Alex" />
                 <Input label="Recipient email" value={recipientEmail} onChange={setRecipientEmail} placeholder="alex@example.com" type="email" />
               </div>
+              <div className="mt-4">
+                <label className="text-xs text-muted-foreground uppercase tracking-widest">How should we deliver it?</label>
+                <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {([
+                    { id: "email", label: "Email", sub: "Beautiful card to inbox" },
+                    { id: "whatsapp", label: "WhatsApp", sub: "Code + note to phone" },
+                    { id: "sms", label: "SMS", sub: "Plain text to phone" },
+                    { id: "print", label: "Print it", sub: "Printable PDF" },
+                  ] as { id: DeliveryMethod; label: string; sub: string }[]).map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setGiftMethod(m.id)}
+                      className={`text-left rounded-xl border p-3 transition-colors ${
+                        giftMethod === m.id
+                          ? "border-indigo/60 bg-indigo/10"
+                          : "border-border bg-background hover:border-indigo/40"
+                      }`}
+                    >
+                      <div className="text-sm font-semibold">{m.label}</div>
+                      <div className="text-[11px] text-muted-foreground leading-snug">{m.sub}</div>
+                    </button>
+                  ))}
+                </div>
+                {giftMethod === "whatsapp" && (
+                  <div className="mt-3">
+                    <Input
+                      label="Recipient's WhatsApp number"
+                      value={recipientPhone}
+                      onChange={setRecipientPhone}
+                      placeholder="+255 712 345 678"
+                    />
+                    <p className="mt-1 text-[11px] text-muted-foreground">We use a standard wa.me link — no WhatsApp Business API needed.</p>
+                  </div>
+                )}
+              </div>
               <div className="mt-3">
                 <label className="text-xs text-muted-foreground uppercase tracking-widest">Personal message</label>
                 <textarea
@@ -222,7 +290,7 @@ function BuyPage() {
           <aside className="lg:sticky lg:top-24 h-fit">
             <div className="bg-surface border border-border rounded-2xl p-6">
               <div className="flex justify-center mb-6">
-                <GiftCard amount={amount} />
+                <GiftCard amount={amount} localLabel={showLocal ? formatLocalAmount(amount, region) : null} />
               </div>
               {/* Region + rail selector */}
               <button
@@ -238,10 +306,32 @@ function BuyPage() {
                 <span className="text-indigo">change</span>
               </button>
               <div className="mb-4 grid grid-cols-3 gap-1.5">
-                <RailChip active={rail === "card"} onClick={() => setRail("card")} label="Card" sub="Visa · MC" disabled={region.psp !== "stripe" && region.code !== "XX"} />
-                <RailChip active={rail === "local"} onClick={() => setRail("local")} label="Local" sub={region.methods[0] ?? "Mobile"} disabled={region.psp === "stripe" && region.code !== "XX"} />
+                <RailChip active={rail === "local"} onClick={() => setRail("local")} label="Local" sub={localMethods[0] ?? "Mobile"} disabled={localMethods.length === 0} />
+                <RailChip active={rail === "card"} onClick={() => setRail("card")} label="Card" sub="Visa · MC" />
                 <RailChip active={rail === "crypto"} onClick={() => setRail("crypto")} label="Crypto" sub="USDT/USDC" />
               </div>
+              {rail === "local" && localMethods.length > 0 && (
+                <div className="mb-4 flex flex-wrap gap-1.5">
+                  {localMethods.map((m) => (
+                    <span key={m} className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-indigo/10 text-indigo border border-indigo/30">
+                      {m}
+                    </span>
+                  ))}
+                  {region.psp === "stripe" ? (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-success-green/10 text-success-green border border-success-green/30">● Live</span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-amber/10 text-amber border border-amber/30">Launching soon</span>
+                  )}
+                </div>
+              )}
+              {rail === "crypto" && cryptoMethods.length > 0 && (
+                <div className="mb-4 flex flex-wrap gap-1.5">
+                  {cryptoMethods.map((m) => (
+                    <span key={m} className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-crypto-teal/10 text-crypto-teal border border-crypto-teal/30">{m}</span>
+                  ))}
+                  <span className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-crypto-teal/15 text-crypto-teal border border-crypto-teal/40">Available now</span>
+                </div>
+              )}
               <div className="space-y-2 text-sm">
                 <Row label={`$${amount} card × ${quantity}`} value={`$${subtotal}`} />
                 <Row label="Delivery" value={delivery === "physical" ? "$5" : "Free"} />
@@ -254,6 +344,20 @@ function BuyPage() {
                   </div>
                 )}
               </div>
+              {showLocal && (
+                <div className="mt-4 rounded-lg border border-border bg-background/60 p-3 text-[11px] text-muted-foreground">
+                  <div className="flex items-center justify-between">
+                    <span className="uppercase tracking-widest">Exchange rate</span>
+                    <span className="tabular text-foreground">1 USD = {region.rate.toLocaleString()} {region.currency}</span>
+                  </div>
+                  <div className="mt-1 flex items-center justify-between">
+                    <span title="Rates update every 4 hours. Locked at time of payment." className="inline-flex items-center gap-1 cursor-help">
+                      <RefreshCw size={10} /> Updated recently · mid-market
+                    </span>
+                    <span className="text-success-green">No markup ✓</span>
+                  </div>
+                </div>
+              )}
               {error && (
                 <div className="mt-4 text-sm text-amber bg-amber/10 border border-amber/30 rounded-lg p-3">
                   {error}
