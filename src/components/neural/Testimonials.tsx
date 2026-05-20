@@ -40,12 +40,12 @@ const VOICES: Voice[] = [
   },
   {
     quote:
-      "I'm 17 and live in a country no AI company supports. USDT in, ChatGPT credit out. Took six minutes. I cried a little.",
-    name: "Reza K.",
-    role: "Student",
-    region: "Tehran",
-    flag: "🇮🇷",
-    tools: ["ChatGPT"],
+      "My card from Istanbul arrived pre-loaded for Cursor. Paid with Papara — no card, no Stripe rejection. Activated in three minutes.",
+    name: "Kemal A.",
+    role: "Freelance dev",
+    region: "Istanbul",
+    flag: "🇹🇷",
+    tools: ["Cursor"],
   },
   {
     quote:
@@ -67,11 +67,10 @@ export function Testimonials() {
           <div>
             <div className="text-xs uppercase tracking-widest text-gold mb-2">Heard from the inbox</div>
             <h2 className="font-display text-3xl sm:text-4xl font-semibold leading-tight max-w-2xl">
-              Real cards. Real currencies. <br className="hidden sm:block" />
-              <span className="text-foreground/60">From people the AI industry forgot.</span>
+              From the first wave <br className="hidden sm:block" />
+              <span className="text-foreground/60">of builders.</span>
             </h2>
           </div>
-          <span className="text-xs text-muted-foreground">5 of 1,200+ early users</span>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-5 lg:gap-6">
