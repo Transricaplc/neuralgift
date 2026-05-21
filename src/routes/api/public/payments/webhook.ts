@@ -22,6 +22,13 @@ async function handleCheckoutCompleted(session: any, origin: string) {
     .update({ status: 'paid', paid_at: new Date().toISOString() } as any)
     .eq('id', orderId);
 
+  // Record delivery "sent" event (idempotent per order)
+  try {
+    await (supabase as any).rpc('mark_gift_sent', { _order_id: orderId });
+  } catch (e) {
+    console.error('Failed to mark gift sent:', e);
+  }
+
   // Fire-and-forget purchase confirmation email
   if (code) {
     try {
