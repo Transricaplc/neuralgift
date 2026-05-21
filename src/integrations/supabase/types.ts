@@ -174,6 +174,7 @@ export type Database = {
           order_id: string | null
           personal_message: string | null
           recipient_contact: string | null
+          redeemed_at: string | null
           sent_at: string | null
           status: string
         }
@@ -186,6 +187,7 @@ export type Database = {
           order_id?: string | null
           personal_message?: string | null
           recipient_contact?: string | null
+          redeemed_at?: string | null
           sent_at?: string | null
           status?: string
         }
@@ -198,6 +200,7 @@ export type Database = {
           order_id?: string | null
           personal_message?: string | null
           recipient_contact?: string | null
+          redeemed_at?: string | null
           sent_at?: string | null
           status?: string
         }
@@ -721,6 +724,17 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_gift_track: {
+        Args: { _order_id: string }
+        Returns: {
+          delivery_method: string
+          opened_at: string
+          order_id: string
+          order_status: string
+          redeemed_at: string
+          sent_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -739,6 +753,8 @@ export type Database = {
           status: string
         }[]
       }
+      mark_gift_opened: { Args: { _order_id: string }; Returns: Json }
+      mark_gift_sent: { Args: { _order_id: string }; Returns: Json }
       move_to_dlq: {
         Args: {
           dlq_name: string
