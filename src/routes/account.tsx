@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import type { Session } from "@supabase/supabase-js";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { getMyReferral } from "@/utils/referrals.functions";
 
 export const Route = createFileRoute("/account")({
   component: AccountPage,
@@ -213,6 +215,8 @@ function Dashboard({ session }: { session: Session }) {
         </button>
       </div>
 
+      <ReferralPanel />
+
       {err && <div className="text-sm text-amber bg-amber/10 border border-amber/30 rounded-lg p-3 mb-6">{err}</div>}
 
       <div className="mb-6 inline-flex rounded-full border border-border bg-surface p-1">
@@ -317,6 +321,136 @@ function Dashboard({ session }: { session: Session }) {
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+function ReferralPanel() {
+  const fetchReferral = useServerFn(getMyReferral);
+  const [data, setData] = useState<Awaited<ReturnType<typeof getMyReferral>> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string | null>(null);
+  const [copied, setCopied] = useState<"code" | "link" | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetchReferral();
+        if (!cancelled) setData(r);
+      } catch (e: any) {
+        if (!cancelled) setErr(e?.message ?? "Could not load referral code");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [fetchReferral]);
+
+  if (loading) {
+    return (
+      <div className="mb-8 bg-surface border border-border rounded-3xl p-6 text-sm text-muted-foreground">
+        Loading your referral code…
+      </div>
+    );
+  }
+
+  if (err || !data?.code || !data.stats) {
+    return (
+      <div className="mb-8 bg-surface border border-border rounded-3xl p-6 text-sm text-muted-foreground">
+        {err ?? "Referral code unavailable right now."}
+      </div>
+    );
+  }
+
+  const shareUrl = `${window.location.origin}/buy?ref=${encodeURIComponent(data.code)}`;
+  const discount = (data.stats.discountCents / 100).toFixed(2);
+  const creditPer = (data.stats.creditPerUseCents / 100).toFixed(2);
+  const earned = (data.stats.totalCreditCents / 100).toFixed(2);
+
+  async function copy(value: string, kind: "code" | "link") {
+    await navigator.clipboard.writeText(value);
+    setCopied(kind);
+    setTimeout(() => setCopied(null), 1500);
+  }
+
+  return (
+    <div className="mb-10 rounded-3xl overflow-hidden border border-gold/30"
+         style={{ background: "var(--gradient-card-face)" }}>
+      <div className="p-6 sm:p-8">
+        <div className="flex flex-wrap items-start gap-6 justify-between">
+          <div>
+            <div className="text-[10px] uppercase tracking-widest text-gold/80 font-display">
+              Your referral code
+            </div>
+            <div className="mt-2 flex items-center gap-3">
+              <span className="font-mono tabular text-3xl sm:text-4xl font-bold text-gradient-gold tracking-widest">
+                {data.code}
+              </span>
+              <button
+                onClick={() => copy(data.code!, "code")}
+                className="h-8 px-3 rounded-full text-[11px] uppercase tracking-widest font-semibold border border-border bg-background hover:bg-elevated"
+              >
+                {copied === "code" ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <p className="mt-3 text-sm text-foreground/70 max-w-md">
+              Friends save <span className="text-gold font-semibold">${discount}</span> on their first card.
+              You earn <span className="text-gold font-semibold">${creditPer}</span> credit per redemption.
+            </p>
+          </div>
+          <div className="grid grid-cols-3 gap-4 text-center min-w-[260px]">
+            <Stat label="Uses" value={`${data.stats.usesCount}/${data.stats.maxUses}`} />
+            <Stat label="Earned" value={`$${earned}`} accent />
+            <Stat label="Status" value={data.stats.isActive ? "Active" : "Paused"} />
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-stretch gap-2">
+          <div className="flex-1 min-w-[240px] flex items-center gap-2 bg-background border border-border rounded-xl px-4 h-11">
+            <span className="text-[10px] uppercase tracking-widest text-muted-foreground shrink-0">Share link</span>
+            <span className="font-mono text-xs truncate text-foreground/80">{shareUrl}</span>
+          </div>
+          <button
+            onClick={() => copy(shareUrl, "link")}
+            className="h-11 px-5 rounded-full font-semibold text-gold-foreground"
+            style={{ background: "var(--gradient-gold)", boxShadow: "var(--shadow-glow-gold)" }}
+          >
+            {copied === "link" ? "Copied!" : "Copy link"}
+          </button>
+        </div>
+
+        {data.recent.length > 0 && (
+          <div className="mt-6">
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
+              Recent redemptions
+            </div>
+            <ul className="divide-y divide-border bg-background border border-border rounded-xl overflow-hidden">
+              {data.recent.map((r, i) => (
+                <li key={i} className="px-4 py-2 flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">
+                    {new Date(r.created_at).toLocaleDateString()}
+                  </span>
+                  <span className="text-gold font-semibold tabular">
+                    −${(r.discount_cents / 100).toFixed(2)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="bg-background/60 border border-border rounded-xl px-3 py-3">
+      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+      <div className={`mt-1 font-display font-bold tabular text-lg ${accent ? "text-gradient-gold" : "text-foreground"}`}>
+        {value}
+      </div>
     </div>
   );
 }
