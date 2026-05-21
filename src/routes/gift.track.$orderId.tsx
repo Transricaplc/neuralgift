@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
+import { getGiftTrack, markGiftOpened } from "@/utils/gift-tracking.functions";
 
 export const Route = createFileRoute("/gift/track/$orderId")({
   component: GiftTrackPage,
@@ -16,12 +19,38 @@ export const Route = createFileRoute("/gift/track/$orderId")({
 
 function GiftTrackPage() {
   const { orderId } = Route.useParams();
+  const fetchTrack = useServerFn(getGiftTrack);
+  const recordOpen = useServerFn(markGiftOpened);
+  const [track, setTrack] = useState<Awaited<ReturnType<typeof getGiftTrack>> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  // MVP: stub timeline — backend will populate as gift_deliveries events fire.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        // Fire open event first (idempotent), then fetch fresh timeline
+        recordOpen({ data: { orderId } }).catch(() => {});
+        const t = await fetchTrack({ data: { orderId } });
+        if (cancelled) return;
+        if (!t) setNotFound(true);
+        else setTrack(t);
+      } catch {
+        if (!cancelled) setNotFound(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [orderId, fetchTrack, recordOpen]);
+
+  const fmt = (iso: string | null) =>
+    iso ? new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : 'Waiting…';
+
   const events = [
-    { key: "sent",     label: "Sent",     active: true,  ts: "Just now" },
-    { key: "opened",   label: "Opened",   active: false, ts: "Waiting…" },
-    { key: "redeemed", label: "Redeemed", active: false, ts: "Waiting…" },
+    { key: "sent",     label: "Sent",     active: !!track?.sentAt,     ts: fmt(track?.sentAt ?? null) },
+    { key: "opened",   label: "Opened",   active: !!track?.openedAt,   ts: fmt(track?.openedAt ?? null) },
+    { key: "redeemed", label: "Redeemed", active: !!track?.redeemedAt, ts: fmt(track?.redeemedAt ?? null) },
   ];
 
   return (
@@ -33,6 +62,15 @@ function GiftTrackPage() {
         <p className="mt-3 text-muted-foreground">
           Order <span className="font-mono tabular text-foreground">#{orderId}</span> · We'll email you when it's opened and redeemed.
         </p>
+
+        {loading && (
+          <div className="mt-8 text-sm text-muted-foreground">Loading timeline…</div>
+        )}
+        {notFound && !loading && (
+          <div className="mt-8 text-sm text-conflict-amber">
+            We couldn't find that gift. Double-check the order ID, or <Link to="/orders" className="text-indigo hover:underline">look it up</Link>.
+          </div>
+        )}
 
         <ol className="mt-10 space-y-5">
           {events.map((e, i) => (
