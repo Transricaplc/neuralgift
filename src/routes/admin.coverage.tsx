@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, Search, Lock, ExternalLink, TrendingUp } from "lucide-react";
+import { ShieldCheck, Search, Lock, ExternalLink, TrendingUp, Gift, Plus, Power } from "lucide-react";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
 import { REGIONS, CRISIS_REGIONS } from "@/data/regions";
@@ -233,6 +233,8 @@ function AdminCoveragePage() {
             ))}
           </div>
         </div>
+
+        <ReferralAdminPanel />
       </main>
       <Footer />
     </div>
