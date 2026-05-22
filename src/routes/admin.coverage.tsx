@@ -272,3 +272,213 @@ function ShellMessage({
     </div>
   );
 }
+
+type ReferralRow = {
+  id: string;
+  code: string;
+  owner_email: string | null;
+  is_active: boolean;
+  uses_count: number;
+  max_uses: number;
+  discount_cents: number;
+  credit_cents: number;
+  expires_at: string | null;
+  created_at: string;
+};
+
+function ReferralAdminPanel() {
+  const [rows, setRows] = useState<ReferralRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [form, setForm] = useState({
+    code: "",
+    owner_email: "",
+    discount_cents: 500,
+    credit_cents: 500,
+    max_uses: 100,
+  });
+
+  async function load() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("referral_codes")
+      .select("id,code,owner_email,is_active,uses_count,max_uses,discount_cents,credit_cents,expires_at,created_at")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) setErr(error.message);
+    else setRows((data ?? []) as ReferralRow[]);
+    setLoading(false);
+  }
+
+  useEffect(() => { load(); }, []);
+
+  async function create(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(null); setBusy("create");
+    const code = form.code.trim().toUpperCase();
+    if (!code) { setErr("Code required"); setBusy(null); return; }
+    const { error } = await supabase.from("referral_codes").insert({
+      code,
+      owner_email: form.owner_email.trim() || null,
+      discount_cents: Math.max(0, form.discount_cents | 0),
+      credit_cents: Math.max(0, form.credit_cents | 0),
+      max_uses: Math.max(1, form.max_uses | 0),
+      is_active: true,
+    });
+    setBusy(null);
+    if (error) { setErr(error.message); return; }
+    setForm({ code: "", owner_email: "", discount_cents: 500, credit_cents: 500, max_uses: 100 });
+    load();
+  }
+
+  async function toggle(row: ReferralRow) {
+    setBusy(row.id);
+    const { error } = await supabase
+      .from("referral_codes")
+      .update({ is_active: !row.is_active })
+      .eq("id", row.id);
+    setBusy(null);
+    if (error) setErr(error.message);
+    else setRows((rs) => rs.map((r) => r.id === row.id ? { ...r, is_active: !row.is_active } : r));
+  }
+
+  async function updateField(row: ReferralRow, patch: Partial<ReferralRow>) {
+    setBusy(row.id);
+    const { error } = await supabase.from("referral_codes").update(patch).eq("id", row.id);
+    setBusy(null);
+    if (error) setErr(error.message);
+    else setRows((rs) => rs.map((r) => r.id === row.id ? { ...r, ...patch } : r));
+  }
+
+  return (
+    <div className="mt-12">
+      <div className="flex items-end justify-between mb-4">
+        <div>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1 flex items-center gap-1.5">
+            <Gift size={12} /> Referral codes
+          </div>
+          <h2 className="font-display text-2xl font-semibold">Create, tune, pause.</h2>
+        </div>
+      </div>
+
+      {err && (
+        <div className="mb-4 text-sm text-amber bg-amber/10 border border-amber/30 rounded-lg p-3">{err}</div>
+      )}
+
+      <form onSubmit={create} className="grid grid-cols-2 sm:grid-cols-6 gap-2 mb-6 bg-surface border border-border rounded-2xl p-4">
+        <input
+          value={form.code}
+          onChange={(e) => setForm({ ...form, code: e.target.value })}
+          placeholder="CODE"
+          className="col-span-2 sm:col-span-1 h-10 px-3 rounded-lg bg-background border border-border text-sm font-mono uppercase tracking-widest"
+        />
+        <input
+          value={form.owner_email}
+          onChange={(e) => setForm({ ...form, owner_email: e.target.value })}
+          placeholder="owner@email (optional)"
+          className="col-span-2 h-10 px-3 rounded-lg bg-background border border-border text-sm"
+        />
+        <input
+          type="number" min={0}
+          value={form.discount_cents}
+          onChange={(e) => setForm({ ...form, discount_cents: Number(e.target.value) })}
+          placeholder="Discount ¢"
+          className="h-10 px-3 rounded-lg bg-background border border-border text-sm tabular"
+          title="Discount in cents"
+        />
+        <input
+          type="number" min={0}
+          value={form.credit_cents}
+          onChange={(e) => setForm({ ...form, credit_cents: Number(e.target.value) })}
+          placeholder="Credit ¢"
+          className="h-10 px-3 rounded-lg bg-background border border-border text-sm tabular"
+          title="Credit per use in cents"
+        />
+        <input
+          type="number" min={1}
+          value={form.max_uses}
+          onChange={(e) => setForm({ ...form, max_uses: Number(e.target.value) })}
+          placeholder="Max uses"
+          className="h-10 px-3 rounded-lg bg-background border border-border text-sm tabular"
+        />
+        <button
+          type="submit"
+          disabled={busy === "create"}
+          className="col-span-2 sm:col-span-6 h-10 rounded-full bg-indigo text-indigo-foreground text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-60"
+        >
+          <Plus size={14} /> {busy === "create" ? "Creating…" : "Create code"}
+        </button>
+      </form>
+
+      <div className="bg-surface border border-border rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-12 gap-3 px-4 py-3 text-[10px] uppercase tracking-widest text-muted-foreground border-b border-border">
+          <div className="col-span-2">Code</div>
+          <div className="col-span-3">Owner</div>
+          <div className="col-span-2 text-right">Uses</div>
+          <div className="col-span-2 text-right">Discount ¢</div>
+          <div className="col-span-2 text-right">Credit ¢</div>
+          <div className="col-span-1 text-right">Status</div>
+        </div>
+        <div className="max-h-[480px] overflow-auto divide-y divide-border">
+          {loading && <div className="px-4 py-8 text-center text-sm text-muted-foreground">Loading…</div>}
+          {!loading && rows.length === 0 && (
+            <div className="px-4 py-10 text-center text-sm text-muted-foreground">No referral codes yet. Create one above.</div>
+          )}
+          {rows.map((r) => (
+            <div key={r.id} className="grid grid-cols-12 gap-3 px-4 py-2.5 text-sm items-center">
+              <div className="col-span-2 font-mono text-xs text-gold tabular tracking-widest truncate">{r.code}</div>
+              <div className="col-span-3 truncate text-xs text-muted-foreground">{r.owner_email ?? "—"}</div>
+              <div className="col-span-2 text-right tabular text-xs">{r.uses_count}/{r.max_uses}</div>
+              <NumberCell
+                value={r.discount_cents}
+                onCommit={(v) => updateField(r, { discount_cents: v })}
+                disabled={busy === r.id}
+              />
+              <NumberCell
+                value={r.credit_cents}
+                onCommit={(v) => updateField(r, { credit_cents: v })}
+                disabled={busy === r.id}
+              />
+              <div className="col-span-1 flex justify-end">
+                <button
+                  onClick={() => toggle(r)}
+                  disabled={busy === r.id}
+                  title={r.is_active ? "Deactivate" : "Activate"}
+                  className={`h-7 px-2 rounded-full text-[10px] uppercase tracking-widest border inline-flex items-center gap-1 disabled:opacity-60 ${
+                    r.is_active
+                      ? "border-[color-mix(in_oklab,var(--success-green)_45%,transparent)] text-[color-mix(in_oklab,var(--success-green)_85%,white)] bg-[color-mix(in_oklab,var(--success-green)_10%,transparent)]"
+                      : "border-border text-muted-foreground"
+                  }`}
+                >
+                  <Power size={10} /> {r.is_active ? "On" : "Off"}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NumberCell({ value, onCommit, disabled }: { value: number; onCommit: (v: number) => void; disabled?: boolean }) {
+  const [v, setV] = useState(String(value));
+  useEffect(() => { setV(String(value)); }, [value]);
+  return (
+    <div className="col-span-2 text-right">
+      <input
+        type="number"
+        min={0}
+        value={v}
+        disabled={disabled}
+        onChange={(e) => setV(e.target.value)}
+        onBlur={() => {
+          const n = Math.max(0, Number(v) | 0);
+          if (n !== value) onCommit(n);
+        }}
+        className="w-24 h-8 px-2 rounded-md bg-background border border-border text-xs tabular text-right"
+      />
+    </div>
+  );
+}
