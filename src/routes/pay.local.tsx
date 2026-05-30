@@ -85,7 +85,7 @@ function PayLocalPage() {
             rate: region.rate,
             paymentMethod: method,
             phone: phone || undefined,
-            returnUrl: `${window.location.origin}/buy/success?code=`, // code appended after order creation
+            returnUrl: `${window.location.origin}/buy/success`,
           },
         });
         setLiveReady(true);
