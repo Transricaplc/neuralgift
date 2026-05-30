@@ -22,7 +22,7 @@ export const PSP_COVERAGE: Record<
 > = {
   stripe:      { name: "Stripe",      status: "live",        blurb: "Cards + 30+ local methods across 47 countries." },
   crypto:      { name: "Crypto rails", status: "live",       blurb: "USDT (Tron) + USDC (Stellar/Polygon). Universal fallback." },
-  flutterwave: { name: "Flutterwave", status: "coming_soon", blurb: "30+ African countries — M-Pesa, MTN MoMo, Airtel, Wave, OPay." },
+  flutterwave: { name: "Flutterwave", status: "live",        blurb: "30+ African countries — M-Pesa, MTN MoMo, Airtel, Wave, OPay." },
   dlocal:      { name: "dLocal",      status: "coming_soon", blurb: "LatAm + South Asia + MENA — PIX, OXXO, Yape, bKash, JazzCash, Papara." },
   xendit:      { name: "Xendit",      status: "coming_soon", blurb: "Southeast Asia — GoPay, OVO, GCash, Maya, DuitNow, PromptPay." },
   razorpay:    { name: "Razorpay",    status: "coming_soon", blurb: "Deepest India coverage — UPI, NetBanking, Paytm, PhonePe." },
