@@ -68,11 +68,15 @@ export const createFlutterwaveCheckout = createServerFn({ method: 'POST' })
 
     const txRef = `NG-${order.id}-${Date.now()}`;
 
+    const successUrl = data.returnUrl.includes('?')
+      ? `${data.returnUrl}&code=${encodeURIComponent(order.redemption_code)}`
+      : `${data.returnUrl}?code=${encodeURIComponent(order.redemption_code)}`;
+
     const payload = {
       tx_ref: txRef,
       amount: usdTotal,
       currency: 'USD',
-      redirect_url: data.returnUrl,
+      redirect_url: successUrl,
       customer: {
         email: data.buyerEmail,
         phonenumber: data.phone || '',
