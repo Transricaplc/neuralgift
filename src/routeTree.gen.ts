@@ -44,6 +44,7 @@ import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lova
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as ApiPublicPaymentsFlutterwaveRouteImport } from './routes/api/public/payments/flutterwave'
 
 const ViewportRoute = ViewportRouteImport.update({
   id: '/viewport',
@@ -224,6 +225,12 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicPaymentsFlutterwaveRoute =
+  ApiPublicPaymentsFlutterwaveRouteImport.update({
+    id: '/api/public/payments/flutterwave',
+    path: '/api/public/payments/flutterwave',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -257,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/api/public/submit-lead': typeof ApiPublicSubmitLeadRoute
   '/gift/track/$orderId': typeof GiftTrackOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/payments/flutterwave': typeof ApiPublicPaymentsFlutterwaveRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -294,6 +302,7 @@ export interface FileRoutesByTo {
   '/api/public/submit-lead': typeof ApiPublicSubmitLeadRoute
   '/gift/track/$orderId': typeof GiftTrackOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/payments/flutterwave': typeof ApiPublicPaymentsFlutterwaveRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -332,6 +341,7 @@ export interface FileRoutesById {
   '/api/public/submit-lead': typeof ApiPublicSubmitLeadRoute
   '/gift/track/$orderId': typeof GiftTrackOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/payments/flutterwave': typeof ApiPublicPaymentsFlutterwaveRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -371,6 +381,7 @@ export interface FileRouteTypes {
     | '/api/public/submit-lead'
     | '/gift/track/$orderId'
     | '/lovable/email/suppression'
+    | '/api/public/payments/flutterwave'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -408,6 +419,7 @@ export interface FileRouteTypes {
     | '/api/public/submit-lead'
     | '/gift/track/$orderId'
     | '/lovable/email/suppression'
+    | '/api/public/payments/flutterwave'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -445,6 +457,7 @@ export interface FileRouteTypes {
     | '/api/public/submit-lead'
     | '/gift/track/$orderId'
     | '/lovable/email/suppression'
+    | '/api/public/payments/flutterwave'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -480,6 +493,7 @@ export interface RootRouteChildren {
   ApiPublicSubmitLeadRoute: typeof ApiPublicSubmitLeadRoute
   GiftTrackOrderIdRoute: typeof GiftTrackOrderIdRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicPaymentsFlutterwaveRoute: typeof ApiPublicPaymentsFlutterwaveRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -733,6 +747,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments/flutterwave': {
+      id: '/api/public/payments/flutterwave'
+      path: '/api/public/payments/flutterwave'
+      fullPath: '/api/public/payments/flutterwave'
+      preLoaderRoute: typeof ApiPublicPaymentsFlutterwaveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -789,6 +810,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicSubmitLeadRoute: ApiPublicSubmitLeadRoute,
   GiftTrackOrderIdRoute: GiftTrackOrderIdRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicPaymentsFlutterwaveRoute: ApiPublicPaymentsFlutterwaveRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
@@ -797,3 +819,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

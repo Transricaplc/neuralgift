@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useSearch, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2, Smartphone, CheckCircle2, ArrowLeft } from "lucide-react";
+import { Loader2, Smartphone, CheckCircle2, ArrowLeft, Rocket } from "lucide-react";
 import { Nav } from "@/components/neural/Nav";
 import { Footer } from "@/components/neural/Footer";
 import { useRegion } from "@/contexts/RegionContext";
@@ -9,6 +9,8 @@ import { REGION_BY_CODE, formatLocalAmount } from "@/data/regions";
 import { supabase } from "@/integrations/supabase/client";
 import { track } from "@/lib/analytics";
 import { toast } from "sonner";
+import { createFlutterwaveCheckout } from "@/utils/flutterwave.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 type Search = {
   amount?: number;
@@ -48,8 +50,12 @@ function PayLocalPage() {
   const [method, setMethod] = useState<string>(region.methods[0] ?? "Mobile money");
   const [phone, setPhone] = useState("");
   const [stage, setStage] = useState<"form" | "processing" | "done">("form");
+  const [liveReady, setLiveReady] = useState<boolean | null>(null);
 
   const localTotal = useMemo(() => formatLocalAmount(usdTotal, region), [usdTotal, region]);
+  const flutterwaveCheckout = useServerFn(createFlutterwaveCheckout);
+
+  const isFlutterwave = region.psp === "flutterwave";
 
   useEffect(() => {
     void track("pay_local_view", { region: region.code, method, usd: usdTotal });
@@ -64,6 +70,44 @@ function PayLocalPage() {
       toast.error("Missing email — restart the order.");
       return;
     }
+
+    // Try live Flutterwave checkout first for African regions
+    if (isFlutterwave) {
+      setStage("processing");
+      try {
+        const result = await flutterwaveCheckout({
+          data: {
+            amountInCents: usdTotal * 100,
+            quantity,
+            buyerEmail,
+            regionCode: region.code,
+            currency: region.currency,
+            rate: region.rate,
+            paymentMethod: method,
+            phone: phone || undefined,
+            returnUrl: `${window.location.origin}/buy/success`,
+          },
+        });
+        setLiveReady(true);
+        // Redirect to Flutterwave hosted checkout
+        window.location.href = result.checkoutUrl;
+        return;
+      } catch (err: any) {
+        const msg = err?.message || "";
+        if (msg.includes("FLW_SECRET_KEY not configured")) {
+          setLiveReady(false);
+          setStage("form");
+          toast.info("Flutterwave is not yet configured. Showing demo flow.");
+        } else {
+          console.error(err);
+          toast.error("Checkout failed. Try again or switch to crypto.");
+          setStage("form");
+          return;
+        }
+      }
+    }
+
+    // Demo / non-Flutterwave flow
     setStage("processing");
     void track("pay_local_submit", { region: region.code, method });
     try {
@@ -87,7 +131,6 @@ function PayLocalPage() {
         .single();
       if (error) throw error;
 
-      // Mock processing delay — real PSP would webhook back.
       await new Promise((r) => setTimeout(r, 2400));
       setStage("done");
       void track("pay_local_mock_success", { order_id: order.id });
@@ -100,6 +143,8 @@ function PayLocalPage() {
       setStage("form");
     }
   }
+
+  const showLaunchingSoon = !isFlutterwave || liveReady === false;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -124,6 +169,17 @@ function PayLocalPage() {
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             className="bg-surface border border-border rounded-2xl p-6 space-y-6"
           >
+            {showLaunchingSoon && (
+              <div className="flex items-center gap-2 text-xs text-amber-400 bg-amber-400/10 border border-amber-400/20 rounded-lg px-3 py-2">
+                <Rocket size={14} />
+                <span>
+                  {isFlutterwave
+                    ? "Flutterwave live keys not configured yet — this is a demo flow."
+                    : `${region.psp.toUpperCase()} integration is launching soon — demo flow below.`}
+                </span>
+              </div>
+            )}
+
             <div>
               <label className="text-xs uppercase tracking-widest text-muted-foreground">Payment method</label>
               <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -166,11 +222,13 @@ function PayLocalPage() {
               className="w-full h-12 rounded-full font-semibold text-gold-foreground"
               style={{ background: "var(--gradient-gold)", boxShadow: "var(--shadow-glow-gold)" }}
             >
-              Pay {localTotal} →
+              {isFlutterwave && liveReady !== false ? `Pay ${localTotal} via Flutterwave →` : `Pay ${localTotal} →`}
             </button>
 
             <p className="text-[11px] text-muted-foreground text-center">
-              Demo — production routes through {region.psp.toUpperCase()}. No real charge.
+              {isFlutterwave && liveReady !== false
+                ? "Secure checkout powered by Flutterwave. You'll be redirected to complete payment."
+                : `Demo — production routes through ${region.psp.toUpperCase()}. No real charge.`}
             </p>
           </motion.div>
         )}
